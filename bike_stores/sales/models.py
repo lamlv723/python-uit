@@ -2,6 +2,7 @@ from django.db import models
 from products.models import Product
 
 class Customer(models.Model):
+    customer_id = models.IntegerField(primary_key=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=25, null=True, blank=True)
@@ -15,6 +16,7 @@ class Customer(models.Model):
         db_table = 'customers'
 
 class Store(models.Model):
+    store_id = models.IntegerField(primary_key=True)
     store_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=25, null=True, blank=True)
     email = models.CharField(max_length=255, null=True, blank=True)
@@ -27,6 +29,7 @@ class Store(models.Model):
         db_table = 'stores'
 
 class Staff(models.Model):
+    staff_id = models.IntegerField(primary_key=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.CharField(max_length=255, unique=True)
@@ -39,6 +42,7 @@ class Staff(models.Model):
         db_table = 'staffs'
 
 class Order(models.Model):
+    order_id = models.IntegerField(primary_key=True)
     ORDER_STATUS_CHOICES = [
         (1, 'Pending'),
         (2, 'Processing'),
@@ -55,7 +59,6 @@ class Order(models.Model):
 
     class Meta:
         db_table = 'orders'
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
