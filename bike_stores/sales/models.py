@@ -11,6 +11,9 @@ class Customer(models.Model):
     state = models.CharField(max_length=25, null=True, blank=True)
     zip_code = models.CharField(max_length=5, null=True, blank=True)
 
+    class Meta:
+        db_table = 'customers'
+
 class Store(models.Model):
     store_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=25, null=True, blank=True)
@@ -20,6 +23,9 @@ class Store(models.Model):
     state = models.CharField(max_length=10, null=True, blank=True)
     zip_code = models.CharField(max_length=5, null=True, blank=True)
 
+    class Meta:
+        db_table = 'stores'
+
 class Staff(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -28,6 +34,9 @@ class Staff(models.Model):
     active = models.BooleanField()
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     manager = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        db_table = 'staffs'
 
 class Order(models.Model):
     ORDER_STATUS_CHOICES = [
@@ -44,6 +53,10 @@ class Order(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     staff = models.ForeignKey(Staff, on_delete=models.PROTECT)
 
+    class Meta:
+        db_table = 'orders'
+
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item_id = models.PositiveIntegerField()
@@ -54,3 +67,4 @@ class OrderItem(models.Model):
 
     class Meta:
         unique_together = ('order', 'item_id')
+        db_table = 'order_items'

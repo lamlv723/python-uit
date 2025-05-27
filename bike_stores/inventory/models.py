@@ -9,3 +9,4 @@ class Stock(models.Model):
 
     class Meta:
         unique_together = ('store', 'product')
+        db_table = 'stocks'
