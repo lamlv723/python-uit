@@ -22,19 +22,13 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-### 3. Cài đặt thư viện cần thiết (Cài vào venv)
+### 3. Cài đặt thư viện cần thiết (cài vào venv)
 
-Cài đặt thư viện trong file `requirements.txt` vào virtual environment:
+Sau khi activate virtual environment, cài đặt thư viện trong file `requirements.txt`:
 
 ```bash
 pip install -r requirements.txt
 ```
-
-```bash
-python manage.py migrate
-```
-
-
 
 ### 4. Chạy server phát triển
 
