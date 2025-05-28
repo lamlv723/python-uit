@@ -2,7 +2,7 @@
 
 ## Bike Stores - Python Django Project
 
-Dự án Django này là một ví dụ triển khai cơ sở dữ liệu [BikeStores](http://127.0.0.1:8000/), ban đầu được thiết kế cho các bài học SQL Server. Dự án sử dụng cơ sở dữ liệu mặc định SQLite của Django và bao gồm nhiều app: `products`, `sales`, và `inventory`, mỗi app chứa các model liên quan.
+Dự án Django này là một ví dụ triển khai cơ sở dữ liệu [BikeStores](https://www.sqlservertutorial.net/getting-started/sql-server-sample-database/), ban đầu được thiết kế cho các bài học SQL Server. Dự án sử dụng cơ sở dữ liệu mặc định SQLite của Django và bao gồm nhiều app: `products`, `sales`, và `inventory`, mỗi app chứa các model liên quan.
 
 ## Bắt đầu
 
