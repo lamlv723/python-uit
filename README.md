@@ -111,9 +111,8 @@ Quản lý khách hàng, nhân viên, cửa hàng và đơn hàng:
   * `list_price`
   * `discount`
   * **Primary key**: (`order_id`, `item_id`)
----
 
-## Misc
+### Misc
 ```bash
 rm db.sqlite3
 rm production/migrations/00*.py
