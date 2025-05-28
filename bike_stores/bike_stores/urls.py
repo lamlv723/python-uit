@@ -21,5 +21,4 @@ from django.views import debug
 urlpatterns = [
     path('', debug.default_urlconf),  # root page
     path('admin/', admin.site.urls),
-    path('test_app/', include('test_app.urls')),
 ]

@@ -24,3 +24,12 @@ class Product(models.Model):
 
     class Meta:
         db_table = 'products'
+
+class Stock(models.Model):
+    store_id = models.ForeignKey('sales.Store', db_column='store_id', on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, db_column='product_id', on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+    class Meta:
+        unique_together = ('store_id', 'product_id')
+        db_table = 'stocks'

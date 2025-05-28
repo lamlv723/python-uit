@@ -1,5 +1,4 @@
 from django.db import models
-from products.models import Product
 
 class Customer(models.Model):
     customer_id = models.IntegerField(primary_key=True)
@@ -35,8 +34,8 @@ class Staff(models.Model):
     email = models.CharField(max_length=255, unique=True)
     phone = models.CharField(max_length=25, null=True, blank=True)
     active = models.BooleanField()
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
-    manager = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+    store_id = models.ForeignKey(Store, db_column='store_id', on_delete=models.CASCADE)
+    manager_id = models.ForeignKey('self', db_column='manager_id', null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         db_table = 'staffs'
@@ -49,25 +48,25 @@ class Order(models.Model):
         (3, 'Rejected'),
         (4, 'Completed'),
     ]
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True)
+    customer_id = models.ForeignKey(Customer, db_column='customer_id', on_delete=models.CASCADE, null=True, blank=True)
     order_status = models.PositiveSmallIntegerField(choices=ORDER_STATUS_CHOICES)
     order_date = models.DateField()
     required_date = models.DateField()
     shipped_date = models.DateField(null=True, blank=True)
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
-    staff = models.ForeignKey(Staff, on_delete=models.PROTECT)
+    store_id = models.ForeignKey(Store, db_column='store_id', on_delete=models.CASCADE)
+    staff_id = models.ForeignKey(Staff, db_column='staff_id', on_delete=models.PROTECT)
 
     class Meta:
         db_table = 'orders'
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order_id = models.ForeignKey(Order, db_column='order_id', on_delete=models.CASCADE)
     item_id = models.PositiveIntegerField()
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_id = models.ForeignKey('production.Product', db_column='product_id', on_delete=models.CASCADE)
     quantity = models.IntegerField()
     list_price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0)
 
     class Meta:
-        unique_together = ('order', 'item_id')
+        unique_together = ('order_id', 'item_id')
         db_table = 'order_items'
