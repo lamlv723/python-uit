@@ -43,7 +43,6 @@ python manage.py runserver
 
 * Username: `admin`
 * Password: `12345678`
----
 
 ## Cấu trúc các app
 
@@ -113,6 +112,8 @@ Quản lý khách hàng, nhân viên, cửa hàng và đơn hàng:
   * `discount`
   * **Primary key**: (`order_id`, `item_id`)
 ---
+
+## Misc
 ```bash
 rm db.sqlite3
 rm production/migrations/00*.py
@@ -121,8 +122,8 @@ rm sales/migrations/00*.py
 
 python3 manage.py makemigrations
 python3 manage.py migrate
+
 python3 manage.py createsuperuser
 
 sqlite3 db.sqlite3 < load_data_modified.sql
-
 ```
