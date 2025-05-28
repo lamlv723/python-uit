@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.views import debug
 
 urlpatterns = [
-    path('', debug.default_urlconf),  # root page
+    # path('', debug.default_urlconf),  # root page
+    path('', include('home.urls')),  # root page
     path('admin/', admin.site.urls),
 ]
