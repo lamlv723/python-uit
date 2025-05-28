@@ -3,314 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đồ Án Bike Stores - Django Project</title>
+    <title>Đồ Án Kỹ Thuật Lập Trình Python - Bike Stores Django Project</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        .tech-badge { background: linear-gradient(45deg, #4f46e5, #7c3aed); }
-        .db-table { font-size: 0.75rem; }
-        @media print {
-            body { font-size: 10px; }
-            .container { max-width: none; }
-            .card-hover:hover { transform: none; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .tech-icon {
+            font-size: 3rem;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50">
     <!-- Header -->
-    <header class="gradient-bg text-white py-8">
-        <div class="container mx-auto px-6">
-            <div class="text-center">
-                <div class="flex justify-center items-center mb-4">
-                    <i class="fab fa-python text-4xl mr-3"></i>
-                    <h1 class="text-4xl font-bold">ĐỒ ÁN CUỐI KỲ</h1>
-                    <i class="fab fa-django text-4xl ml-3"></i>
+    <header class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-6 text-center">
+            <div class="mb-6">
+                <i class="fab fa-python text-6xl mb-4 text-yellow-300"></i>
+                <i class="fas fa-plus text-2xl mx-4"></i>
+                <div class="inline-block">
+                    <svg class="w-16 h-16 text-green-400" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.146 0h1.708v23.104h-1.708V0zM0 9.146h23.104v1.708H0V9.146z"/>
+                    </svg>
                 </div>
-                <h2 class="text-2xl font-semibold mb-2">KỸ THUẬT LẬP TRÌNH PYTHON</h2>
-                <div class="text-lg">
-                    <p class="mb-1">Lớp: <span class="font-semibold">IE221.E21.CN2.CNTT</span></p>
-                    <p>Năm học: <span class="font-semibold">2024-2025</span></p>
-                </div>
+            </div>
+            <h1 class="text-5xl font-bold mb-4">Đồ Án Kỹ Thuật Lập Trình Python</h1>
+            <h2 class="text-2xl font-light mb-6 opacity-90">Django Web Application Project</h2>
+            <div class="bg-white bg-opacity-20 rounded-2xl p-6 backdrop-blur-sm max-w-2xl mx-auto">
+                <h3 class="text-xl font-semibold mb-2">Bike Stores Management System</h3>
+                <p class="text-lg opacity-90">Năm học: 2024-2025 | Lớp: IE221.E21.CN2.CNTT</p>
             </div>
         </div>
     </header>
 
-    <div class="container mx-auto px-6 py-8">
-        <!-- Project Title -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">
-                <i class="fas fa-bicycle text-blue-600 mr-3"></i>
-                BIKE STORES - DJANGO PROJECT
-            </h1>
-            <p class="text-gray-600 text-lg max-w-3xl mx-auto">
-                Dự án Django triển khai cơ sở dữ liệu BikeStores, sử dụng SQLite và bao gồm nhiều app: production, sales, với các model liên quan đến quản lý cửa hàng xe đạp.
-            </p>
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12">
+        <!-- Team Members -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 section-title">Thành Viên Nhóm</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl p-6 shadow-lg card-hover text-center">
+                    <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <i class="fas fa-user text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800">Lê Văn Lâm</h3>
+                    <p class="text-gray-600 font-mono">24210040</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-lg card-hover text-center">
+                    <div class="w-20 h-20 bg-gradient-to-r from-green-500 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <i class="fas fa-user text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800">Tạ Kim Phúc</h3>
+                    <p class="text-gray-600 font-mono">24210065</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-lg card-hover text-center">
+                    <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <i class="fas fa-user text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800">Trương Công Hiếu</h3>
+                    <p class="text-gray-600 font-mono">24210023</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Description -->
+        <section class="mb-16">
+            <div class="bg-white rounded-2xl p-8 shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 section-title text-center">Mô Tả Dự Án</h2>
+                <div class="prose max-w-none">
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                        <strong>Bike Stores Management System</strong> là một ứng dụng web Django hoàn chỉnh được phát triển để quản lý hệ thống cửa hàng xe đạp.
+                        Dự án này triển khai cơ sở dữ liệu BikeStores với các chức năng quản lý sản phẩm, khách hàng, đơn hàng và kho hàng.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 p-6 rounded-xl">
+                            <h4 class="font-semibold text-blue-800 mb-3"><i class="fas fa-bullseye mr-2"></i>Mục tiêu</h4>
+                            <p class="text-gray-700">Xây dựng hệ thống quản lý cửa hàng xe đạp với đầy đủ chức năng CRUD, authentication và giao diện thân thiện.</p>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-xl">
+                            <h4 class="font-semibold text-green-800 mb-3"><i class="fas fa-cog mr-2"></i>Tính năng</h4>
+                            <p class="text-gray-700">Quản lý sản phẩm, khách hàng, đơn hàng, nhân viên, kho hàng với hệ thống phân quyền và báo cáo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Stack -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 section-title">Công Nghệ Sử Dụng</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover text-center">
+                    <i class="fab fa-python tech-icon mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Python</h3>
+                    <p class="text-gray-600">Ngôn ngữ lập trình chính, phiên bản 3.11+</p>
+                    <div class="mt-4 flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Backend</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Logic</span>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover text-center">
+                    <div class="text-6xl mb-4 text-green-600">
+                        <svg class="w-16 h-16 mx-auto" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.146 0h1.708v23.104h-1.708V0zM0 9.146h23.104v1.708H0V9.146z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Django</h3>
+                    <p class="text-gray-600">Framework web mạnh mẽ với ORM và admin interface</p>
+                    <div class="mt-4 flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Framework</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">ORM</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Structure -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 section-title">Cấu Trúc Dự Án</h2>
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Django Apps -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <h3 class="text-2xl font-bold mb-6 text-blue-600"><i class="fas fa-cubes mr-3"></i>Django Apps</h3>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="font-bold text-lg text-gray-800">production</h4>
+                            <p class="text-gray-600">Quản lý sản phẩm, danh mục, thương hiệu và kho hàng</p>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Categories</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Brands</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Products</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Stocks</span>
+                            </div>
+                        </div>
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <h4 class="font-bold text-lg text-gray-800">sales</h4>
+                            <p class="text-gray-600">Quản lý khách hàng, đơn hàng, nhân viên và cửa hàng</p>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">Customers</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">Orders</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">Order Items</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">Staffs</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">Stores</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Schema -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <h3 class="text-2xl font-bold mb-6 text-purple-600"><i class="fas fa-database mr-3"></i>Cấu Trúc Database</h3>
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-blue-800 mb-2">Production Schema</h4>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li><i class="fas fa-table mr-2"></i>categories (category_id, category_name)</li>
+                                <li><i class="fas fa-table mr-2"></i>brands (brand_id, brand_name)</li>
+                                <li><i class="fas fa-table mr-2"></i>products (product_id, name, brand, category, year, price)</li>
+                                <li><i class="fas fa-table mr-2"></i>stocks (store_id, product_id, quantity)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-800 mb-2">Sales Schema</h4>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li><i class="fas fa-table mr-2"></i>customers (customer_id, personal_info, address)</li>
+                                <li><i class="fas fa-table mr-2"></i>stores (store_id, store_info, contact)</li>
+                                <li><i class="fas fa-table mr-2"></i>staffs (staff_id, info, store_id, manager_id)</li>
+                                <li><i class="fas fa-table mr-2"></i>orders (order_id, customer, status, dates)</li>
+                                <li><i class="fas fa-table mr-2"></i>order_items (order_id, item_id, product, qty, price)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Features -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 section-title">Tính Năng Chính</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Quản lý người dùng</h3>
+                    <p class="text-gray-600 text-sm">Hệ thống đăng nhập, phân quyền và quản lý tài khoản</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-bicycle text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Quản lý sản phẩm</h3>
+                    <p class="text-gray-600 text-sm">CRUD sản phẩm, danh mục, thương hiệu với hình ảnh</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-shopping-cart text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Quản lý đơn hàng</h3>
+                    <p class="text-gray-600 text-sm">Xử lý đơn hàng với 4 trạng thái và theo dõi</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-warehouse text-yellow-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Quản lý kho</h3>
+                    <p class="text-gray-600 text-sm">Theo dõi tồn kho theo cửa hàng và sản phẩm</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-cogs text-red-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Admin Interface</h3>
+                    <p class="text-gray-600 text-sm">Giao diện quản trị Django tích hợp sẵn</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-mobile-alt text-indigo-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Responsive Design</h3>
+                    <p class="text-gray-600 text-sm">Giao diện thích ứng mọi thiết bị</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Specifications -->
+<!--        <section class="mb-16 shadow-lg">-->
+<!--            <div class="bg-white rounded-2xl p-8 shadow-lg">-->
+<!--                <h2 class="text-3xl font-bold mb-6 section-title text-center">Thông Tin Kỹ Thuật</h2>-->
+<!--                <div class="grid md:grid-cols-2 gap-8">-->
+<!--                    <div>-->
+<!--                        <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fas fa-server mr-2 text-blue-600"></i>Backend</h3>-->
+<!--                        <ul class="space-y-2 text-gray-700">-->
+<!--                            <li><i class="fas fa-circle text-green-500 text-xs mr-2"></i>Django Framework với SQLite</li>-->
+<!--                            <li><i class="fas fa-circle text-green-500 text-xs mr-2"></i>ORM Django cho database operations</li>-->
+<!--                            <li><i class="fas fa-circle text-green-500 text-xs mr-2"></i>Authentication & Authorization</li>-->
+<!--                            <li><i class="fas fa-circle text-green-500 text-xs mr-2"></i>Admin interface tích hợp</li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fas fa-desktop mr-2 text-purple-600"></i>Frontend</h3>-->
+<!--                        <ul class="space-y-2 text-gray-700">-->
+<!--                            <li><i class="fas fa-circle text-green-500 text-xs mr-2"></i>HTML5, CSS3, JavaScript</li>-->
+<!--                            <li><i class="fas fa-circle text-green-500 text-xs mr-2"></i>Bootstrap responsive framework</li>-->
+<!--                            <li><i class="fas fa-circle text-green-500 text-xs mr-2"></i>Django Templates system</li>-->
+<!--                            <li><i class="fas fa-circle text-green-500 text-xs mr-2"></i>Ajax cho dynamic content</li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--            </div>-->
+<!--        </section>-->
+
+         <section class="mb-16">
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-key mr-2"></i>Thông tin đăng nhập Admin</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <span class="font-mono bg-gray-200 px-3 py-1 rounded">Username: admin</span>
+                    </div>
+                    <div>
+                        <span class="font-mono bg-gray-200 px-3 py-1 rounded">Password: 12345678</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="text-center">
+            <h2 class="text-3xl font-bold mb-8 section-title">Liên Kết & Demo</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                <a href="https://github.com/lamlv723/python-uit" target="_blank" class="btn-primary text-white py-4 px-6 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 block">
+                    <i class="fab fa-github text-xl mb-2 block"></i>
+                    View on GitHub
+                </a>
+                <a href="/admin" target="_blank" class="bg-gray-800 text-white py-4 px-6 rounded-xl font-semibold hover:bg-gray-700 hover:shadow-lg transition-all duration-300 block">
+                    <i class="fas fa-cogs text-xl mb-2 block"></i>
+                    Admin Panel
+                </a>
+                <a href="#" class="bg-green-600 text-white py-4 px-6 rounded-xl font-semibold hover:bg-green-700 hover:shadow-lg transition-all duration-300 block">
+                    <i class="fas fa-play text-xl mb-2 block"></i>
+                    Live Demo
+                </a>
+                <a href="mailto:team@example.com" class="bg-blue-600 text-white py-4 px-6 rounded-xl font-semibold hover:bg-blue-700 hover:shadow-lg transition-all duration-300 block">
+                    <i class="fas fa-envelope text-xl mb-2 block"></i>
+                    Contact Team
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-8 mt-16">
+        <div class="container mx-auto px-6 text-center">
+            <div class="mb-4">
+                <p class="text-lg font-semibold">Đồ Án Kỹ Thuật Lập Trình Python</p>
+                <p class="opacity-80">Trường Đại học Công nghệ Thông tin - ĐHQG TP.HCM</p>
+            </div>
+            <div class="border-t border-white border-opacity-20 pt-4">
+                <p class="opacity-70">© 2025 Bike Stores Management System. Developed with ❤️ using Django & Python</p>
+            </div>
         </div>
-
-        <!-- Team Members & Quick Actions -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Team Members -->
-            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-users text-blue-600 mr-2"></i>
-                    Thành Viên Nhóm
-                </h3>
-                <div class="space-y-3">
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <i class="fas fa-user-circle text-blue-500 text-xl mr-3"></i>
-                        <div>
-                            <p class="font-medium text-gray-800">Lê Văn Lâm</p>
-                            <p class="text-sm text-gray-600">MSSV: 24210040</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <i class="fas fa-user-circle text-green-500 text-xl mr-3"></i>
-                        <div>
-                            <p class="font-medium text-gray-800">Tạ Kim Phúc</p>
-                            <p class="text-sm text-gray-600">MSSV: 24210065</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <i class="fas fa-user-circle text-purple-500 text-xl mr-3"></i>
-                        <div>
-                            <p class="font-medium text-gray-800">Trương Công Hiếu</p>
-                            <p class="text-sm text-gray-600">MSSV: 24210023</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-rocket text-blue-600 mr-2"></i>
-                    Liên Kết Quan Trọng
-                </h3>
-                <div class="space-y-3">
-                    <a href="https://github.com/lamlv723/python-uit" target="_blank" class="flex items-center p-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition">
-                        <i class="fab fa-github text-xl mr-3"></i>
-                        <span>Xem Source Code</span>
-                    </a>
-                    <a href="http://127.0.0.1:8000/admin" target="_blank" class="flex items-center p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                        <i class="fas fa-cog text-xl mr-3"></i>
-                        <span>Admin Panel</span>
-                    </a>
-                    <a href="http://127.0.0.1:8000/" target="_blank" class="flex items-center p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                        <i class="fas fa-external-link-alt text-xl mr-3"></i>
-                        <span>Live Demo</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Project Structure & Database Schema -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Project Structure -->
-            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-folder-tree text-blue-600 mr-2"></i>
-                    Cấu Trúc Dự Án
-                </h3>
-                <div class="space-y-3 text-sm">
-                    <div class="bg-gray-50 p-3 rounded">
-                        <h4 class="font-semibold text-blue-600 mb-2">
-                            <i class="fas fa-cube mr-1"></i>
-                            App: production
-                        </h4>
-                        <ul class="space-y-1 text-gray-700 ml-4">
-                            <li>• Category - Quản lý danh mục sản phẩm</li>
-                            <li>• Brand - Quản lý thương hiệu</li>
-                            <li>• Product - Quản lý sản phẩm</li>
-                            <li>• Stock - Quản lý kho hàng</li>
-                        </ul>
-                    </div>
-                    <div class="bg-gray-50 p-3 rounded">
-                        <h4 class="font-semibold text-green-600 mb-2">
-                            <i class="fas fa-shopping-cart mr-1"></i>
-                            App: sales
-                        </h4>
-                        <ul class="space-y-1 text-gray-700 ml-4">
-                            <li>• Customer - Quản lý khách hàng</li>
-                            <li>• Store - Quản lý cửa hàng</li>
-                            <li>• Staff - Quản lý nhân viên</li>
-                            <li>• Order & OrderItem - Quản lý đơn hàng</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Database Schema -->
-            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-database text-blue-600 mr-2"></i>
-                    Cấu Trúc Cơ Sở Dữ Liệu
-                </h3>
-                <div class="space-y-2 text-xs">
-                    <div class="bg-blue-50 p-2 rounded border-l-4 border-blue-500">
-                        <h5 class="font-semibold text-blue-700">PRODUCTION SCHEMA</h5>
-                        <div class="mt-1 text-gray-600">
-                            <div>Categories → Brands → Products</div>
-                            <div>Products ↔ Stocks ↔ Stores</div>
-                        </div>
-                    </div>
-                    <div class="bg-green-50 p-2 rounded border-l-4 border-green-500">
-                        <h5 class="font-semibold text-green-700">SALES SCHEMA</h5>
-                        <div class="mt-1 text-gray-600">
-                            <div>Customers → Orders ← Staff</div>
-                            <div>Orders → OrderItems → Products</div>
-                            <div>Staff → Stores (Manager hierarchy)</div>
-                        </div>
-                    </div>
-                    <div class="bg-purple-50 p-2 rounded border-l-4 border-purple-500">
-                        <h5 class="font-semibold text-purple-700">KEY RELATIONSHIPS</h5>
-                        <div class="mt-1 text-gray-600">
-                            <div>• Foreign Keys: brand_id, category_id, store_id</div>
-                            <div>• Composite Keys: (store_id, product_id)</div>
-                            <div>• Self-referencing: manager_id → staff_id</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Features & Technology -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Features -->
-            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-star text-blue-600 mr-2"></i>
-                    Tính Năng Chính
-                </h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex items-center p-2 bg-blue-50 rounded">
-                        <i class="fas fa-user-shield text-blue-600 mr-2"></i>
-                        <span class="text-sm">User Authentication</span>
-                    </div>
-                    <div class="flex items-center p-2 bg-green-50 rounded">
-                        <i class="fas fa-database text-green-600 mr-2"></i>
-                        <span class="text-sm">CRUD Operations</span>
-                    </div>
-                    <div class="flex items-center p-2 bg-purple-50 rounded">
-                        <i class="fas fa-cogs text-purple-600 mr-2"></i>
-                        <span class="text-sm">Admin Panel</span>
-                    </div>
-                    <div class="flex items-center p-2 bg-yellow-50 rounded">
-                        <i class="fas fa-mobile-alt text-yellow-600 mr-2"></i>
-                        <span class="text-sm">Responsive Design</span>
-                    </div>
-                    <div class="flex items-center p-2 bg-red-50 rounded">
-                        <i class="fas fa-chart-bar text-red-600 mr-2"></i>
-                        <span class="text-sm">Order Management</span>
-                    </div>
-                    <div class="flex items-center p-2 bg-indigo-50 rounded">
-                        <i class="fas fa-warehouse text-indigo-600 mr-2"></i>
-                        <span class="text-sm">Inventory System</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Technology Stack -->
-            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-code text-blue-600 mr-2"></i>
-                    Công Nghệ Sử Dụng
-                </h3>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <div class="flex items-center">
-                            <i class="fab fa-python text-blue-600 mr-2"></i>
-                            <span class="font-medium">Python</span>
-                        </div>
-                        <span class="tech-badge text-white px-2 py-1 rounded text-xs">Backend</span>
-                    </div>
-                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <div class="flex items-center">
-                            <i class="fab fa-django text-green-600 mr-2"></i>
-                            <span class="font-medium">Django</span>
-                        </div>
-                        <span class="tech-badge text-white px-2 py-1 rounded text-xs">Framework</span>
-                    </div>
-                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <div class="flex items-center">
-                            <i class="fas fa-database text-blue-600 mr-2"></i>
-                            <span class="font-medium">SQLite</span>
-                        </div>
-                        <span class="tech-badge text-white px-2 py-1 rounded text-xs">Database</span>
-                    </div>
-                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <div class="flex items-center">
-                            <i class="fab fa-html5 text-orange-600 mr-2"></i>
-                            <span class="font-medium">HTML/CSS/JS</span>
-                        </div>
-                        <span class="tech-badge text-white px-2 py-1 rounded text-xs">Frontend</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Setup Instructions -->
-        <div class="bg-white rounded-lg shadow-lg p-6 card-hover mb-8">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-terminal text-blue-600 mr-2"></i>
-                Hướng Dẫn Cài Đặt
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <h4 class="font-semibold text-gray-700 mb-2">1. Clone Repository</h4>
-                    <div class="bg-gray-900 text-green-400 p-3 rounded text-sm font-mono">
-                        git clone https://github.com/lamlv723/python-uit<br>
-                        cd python-uit
-                    </div>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-gray-700 mb-2">2. Tạo Virtual Environment</h4>
-                    <div class="bg-gray-900 text-green-400 p-3 rounded text-sm font-mono">
-                        python -m venv venv<br>
-                        venv\Scripts\activate
-                    </div>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-gray-700 mb-2">3. Cài Đặt Dependencies</h4>
-                    <div class="bg-gray-900 text-green-400 p-3 rounded text-sm font-mono">
-                        pip install -r requirements.txt
-                    </div>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-gray-700 mb-2">4. Chạy Server</h4>
-                    <div class="bg-gray-900 text-green-400 p-3 rounded text-sm font-mono">
-                        python manage.py runserver
-                    </div>
-                </div>
-            </div>
-            <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-                <p class="text-sm text-yellow-800">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    <strong>Tài khoản Admin:</strong> Username: admin | Password: 12345678
-                </p>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="text-center py-6 border-t border-gray-200">
-            <div class="text-gray-600">
-                <p class="text-sm mb-2">
-                    <i class="fas fa-university mr-1"></i>
-                    Trường Đại học Công nghệ Thông tin - ĐHQG-HCM
-                </p>
-                <p class="text-sm mb-2">
-                    <i class="fas fa-graduation-cap mr-1"></i>
-                    Khoa Công nghệ Phần mềm
-                </p>
-                <p class="text-xs text-gray-500">
-                    © 2024 - Đồ án Kỹ thuật Lập trình Python. All rights reserved.
-                </p>
-            </div>
-        </footer>
-    </div>
+    </footer>
 </body>
 </html>

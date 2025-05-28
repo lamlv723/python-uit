@@ -22,28 +22,21 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-### 3. Cài đặt thư viện cần thiết
+### 3. Cài đặt thư viện cần thiết (Cài vào venv)
 
-Cài đặt thư viện trong file `requirements.txt`:
+Cài đặt thư viện trong file `requirements.txt` vào virtual environment:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Chạy migrate để tạo cơ sở dữ liệu
-
-Django sẽ tạo các bảng dựa trên các file migration đã có:
-
 ```bash
 python manage.py migrate
 ```
 
-### 5. Tài khoản superuser
 
-* Username: `admin`
-* Password: `12345678`
 
-### 6. Chạy server phát triển
+### 4. Chạy server phát triển
 
 ```bash
 python manage.py runserver
@@ -52,6 +45,10 @@ python manage.py runserver
 * Truy cập trang chủ tại: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 * Truy cập trang admin tại: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
 
+### 5. Tài khoản superuser
+
+* Username: `admin`
+* Password: `12345678`
 ---
 
 ## Cấu trúc các app
