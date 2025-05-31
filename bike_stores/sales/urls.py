@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views
+from .views import CustomerListView
 
 urlpatterns = [
-    # path('production', views.<func>, name=''),  # template
+    # path('<path>', views.<func>, name=''),  # template
+    path('nhanvien/', CustomerListView.as_view(), name='api-nhanvien'),  # template
 ]
