@@ -3,5 +3,5 @@ from .views import CustomerListView
 
 urlpatterns = [
     # path('<path>', views.<func>, name=''),  # template
-    path('nhanvien/', CustomerListView.as_view(), name='api-nhanvien'),  # template
+    path('khachhang/', CustomerListView.as_view(), name='api-khachhang'),  # template
 ]
