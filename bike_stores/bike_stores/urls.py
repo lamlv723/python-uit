@@ -20,6 +20,8 @@ from django.views import debug
 
 urlpatterns = [
     # path('', debug.default_urlconf),  # root page
-    path('', include('home.urls')),  # root page
-    path('admin/', admin.site.urls),
+    path('', include('home.urls'), name='home'),  # root page
+    path('admin/', admin.site.urls, name='admin'),
+    path('api/production/', include('production.urls'), name='production'),
+    path('api/sales/', include('sales.urls'), name='sales'),
 ]
