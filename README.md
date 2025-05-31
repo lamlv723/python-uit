@@ -4,6 +4,8 @@
 
 Dự án Django này là một ví dụ triển khai cơ sở dữ liệu [BikeStores](https://www.sqlservertutorial.net/getting-started/sql-server-sample-database/), ban đầu được thiết kế cho các bài học SQL Server. Dự án sử dụng cơ sở dữ liệu mặc định SQLite của Django và bao gồm các app: `production` và `sales`. Mỗi app chứa các model liên quan.
 
+---
+
 ## Bắt đầu
 
 Làm theo các bước sau để thiết lập dự án trên máy của bạn:
@@ -43,6 +45,46 @@ python manage.py runserver
 
 * Username: `admin`
 * Password: `12345678`
+
+---
+
+## Truy cập Cơ sở dữ liệu (SQLite3)
+
+Bạn có thể truy vấn trực tiếp cơ sở dữ liệu `db.sqlite3` bằng công cụ dòng lệnh `sqlite3`.
+
+1.  **Mở terminal của bạn và di chuyển đến thư mục gốc của dự án** (nơi chứa file `manage.py` và `db.sqlite3`).
+    Ví dụ:
+    ```bash
+    cd path/to/bike_stores
+    ```
+
+2.  **Kết nối với cơ sở dữ liệu:**
+    ```bash
+    sqlite3 db.sqlite3
+    ```
+    Lệnh này sẽ mở dấu nhắc của SQLite (`sqlite>`).
+
+3.  **Hiển thị các bảng có sẵn:**
+    ```sqlite
+    .tables
+
+4.  **Chạy một truy vấn đơn giản:**
+    Để chọn tất cả dữ liệu từ một bảng (ví dụ: một bảng có tên `customers` hoặc tên bảng cụ thể của bạn như `production_customer`):
+    ```sqlite
+    SELECT * FROM customers;
+    ```
+
+    **Lưu ý quan trọng:** Tất cả các câu lệnh truy vấn SQL **phải** kết thúc bằng dấu chấm phẩy (`;`) để chúng có thể thực thi trong `sqlite3`. Nếu bạn nhấn Enter mà không có dấu chấm phẩy, trình bao thường sẽ hiển thị dấu nhắc tiếp tục (như `...>`) để chờ bạn hoàn thành lệnh.
+
+5.  **Thoát khỏi SQLite:**
+    ```sqlite
+    .quit
+    ```
+
+**Lưu ý:** Nếu lệnh `.tables` không hiển thị gì hoặc các bảng của ứng dụng Django bị thiếu, có thể bạn cần chạy Django migrations trước:
+```bash
+python manage.py makemigrations
+python manage.py migrate
 
 ## Cấu trúc các app
 
