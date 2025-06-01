@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse, JsonResponse
-from jsonschema.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 
 from .models import Customer
 import json
@@ -38,7 +38,6 @@ class CustomerListView(View):
                     return JsonResponse({'error': f'Thiếu trường bắt buộc: {field}'}, status=400)
 
             # 3. Tạo đối tượng Customer mới
-            # Nếu customer_id đã tồn tại, throw IntegrityError
             new_customer = Customer.objects.create(
                 customer_id=data.get('customer_id'),
                 first_name=data.get('first_name'),
@@ -124,7 +123,7 @@ class CustomerDetailView(View):
 
             # 4. Validate và Lưu thay đổi
             # full_clean() sẽ kiểm tra các ràng buộc của model (ví dụ: max_length)
-            customer.full_clean()
+            # customer.full_clean()
             customer.save()
 
             # 5. Chuẩn bị dữ liệu trả về (thông tin khách hàng vừa cập nhật)
