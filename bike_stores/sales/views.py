@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse, JsonResponse
-from jsonschema.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 
 from .models import Customer
 import json
@@ -38,7 +38,6 @@ class CustomerListView(View):
                     return JsonResponse({'error': f'Thiếu trường bắt buộc: {field}'}, status=400)
 
             # 3. Tạo đối tượng Customer mới
-            # Nếu customer_id đã tồn tại, throw IntegrityError
             new_customer = Customer.objects.create(
                 customer_id=data.get('customer_id'),
                 first_name=data.get('first_name'),
@@ -124,7 +123,7 @@ class CustomerDetailView(View):
 
             # 4. Validate và Lưu thay đổi
             # full_clean() sẽ kiểm tra các ràng buộc của model (ví dụ: max_length)
-            customer.full_clean()
+            # customer.full_clean()
             customer.save()
 
             # 5. Chuẩn bị dữ liệu trả về (thông tin khách hàng vừa cập nhật)
@@ -141,4 +140,27 @@ class CustomerDetailView(View):
             # Bắt các lỗi không mong muốn khác
             return JsonResponse({'error': f'Lỗi: {str(e)}'}, status=500)
 
+
+    def delete(self, request, customer_id):
+        try:
+            # 1. Tìm khách hàng cần xóa
+            try:
+                customer = Customer.objects.get(customer_id=customer_id)
+            except Customer.DoesNotExist:
+                return JsonResponse({'error': 'Khách hàng không tồn tại'}, status=404)
+
+            # 2. Thực hiện xóa
+            # Order.customer_id có on_delete=models.CASCADE nên Order cũng sẽ bị xóa theo
+            customer_name = f"{customer.first_name} {customer.last_name}"
+            customer.delete()
+
+            # 3. Trả về response thành công
+            # return HttpResponse(status=204)
+            return JsonResponse(
+                {'message': f'Khách hàng {customer_name} (ID: {customer_id}) đã được xóa thành công.'},
+                status=200)  # Hoặc 204 với HttpResponse(status=204)
+
+        except Exception as e:
+            # Bắt các lỗi không mong muốn khác
+            return JsonResponse({'error': f'Đã có lỗi xảy ra trong quá trình xóa: {str(e)}'}, status=500)
 ######################### END #########################
