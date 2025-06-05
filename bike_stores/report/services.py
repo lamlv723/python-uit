@@ -27,6 +27,3 @@ def get_inventory_report_data()->dict:
         })
     print(inventory_items)
     return report_data_grouped
-
-if __name__ == '__main__':
-    get_inventory_report_data()
