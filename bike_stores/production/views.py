@@ -1,10 +1,13 @@
+# your_project/production/views.py
+
 from django.views import View
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.db import IntegrityError
+from django.db import IntegrityError, models # Import models for F expression in sorting
 import json
+from decimal import Decimal
 
 from .models import Category, Brand, Product, Stock
 from sales.models import Store # Cần import Store từ app sales để sử dụng trong Stock
@@ -12,10 +15,60 @@ from sales.models import Store # Cần import Store từ app sales để sử d�
 @method_decorator(csrf_exempt, name='dispatch')
 class ProductListView(View):
     """
-    Xử lý GET để lấy danh sách sản phẩm và POST để tạo sản phẩm mới.
+    Xử lý GET để lấy danh sách sản phẩm với khả năng lọc và sắp xếp.
+    Filters:
+        - brand_id (int)
+        - category_id (int)
+        - min_price (decimal)
+        - max_price (decimal)
+    Sorting:
+        - sort_by (string): 'product_name', 'list_price', 'model_year'
+        - order_by (string): 'asc' (mặc định), 'desc'
     """
     def get(self, request):
         products = Product.objects.all()
+
+        brand_id = request.GET.get('brand_id')
+        category_id = request.GET.get('category_id')
+        min_price = request.GET.get('min_price')
+        max_price = request.GET.get('max_price')
+
+        if brand_id:
+            try:
+                products = products.filter(brand_id=int(brand_id))
+            except ValueError:
+                return JsonResponse({'error': 'brand_id phải là một số nguyên hợp lệ.'}, status=400)
+        if category_id:
+            try:
+                products = products.filter(category_id=int(category_id))
+            except ValueError:
+                return JsonResponse({'error': 'category_id phải là một số nguyên hợp lệ.'}, status=400)
+        if min_price:
+            try:
+                # Thay float(min_price) bằng Decimal(min_price)
+                products = products.filter(list_price__gte=Decimal(min_price))
+            except ValueError:
+                return JsonResponse({'error': 'min_price phải là một số hợp lệ.'}, status=400)
+        if max_price:
+            try:
+                # Thay float(max_price) bằng Decimal(max_price)
+                products = products.filter(list_price__lte=Decimal(max_price))
+            except ValueError:
+                return JsonResponse({'error': 'max_price phải là một số hợp lệ.'}, status=400)
+
+        sort_by = request.GET.get('sort_by')
+        order_by = request.GET.get('order_by', 'asc')
+
+        valid_sort_fields = ['product_name', 'list_price', 'model_year']
+
+        if sort_by and sort_by in valid_sort_fields:
+            if order_by == 'desc':
+                products = products.order_by(f'-{sort_by}')
+            else:
+                products = products.order_by(sort_by)
+        elif sort_by and sort_by not in valid_sort_fields:
+            return JsonResponse({'error': f'Trường sắp xếp không hợp lệ. Chỉ chấp nhận: {", ".join(valid_sort_fields)}'}, status=400)
+
         product_data = []
         for product in products:
             product_data.append({
@@ -24,7 +77,7 @@ class ProductListView(View):
                 'brand_name': product.brand_id.brand_name,
                 'category_name': product.category_id.category_name,
                 'model_year': product.model_year,
-                'list_price': str(product.list_price) # Chuyển Decimal sang string
+                'list_price': str(product.list_price)
             })
         return JsonResponse(product_data, safe=False)
 
@@ -43,7 +96,7 @@ class ProductListView(View):
                 brand = Brand.objects.get(brand_id=data.get('brand_id'))
             except Brand.DoesNotExist:
                 return JsonResponse({'error': f"Brand với ID '{data.get('brand_id')}' không tồn tại."}, status=404)
-            
+
             try:
                 category = Category.objects.get(category_id=data.get('category_id'))
             except Category.DoesNotExist:
@@ -57,7 +110,7 @@ class ProductListView(View):
                 model_year=data.get('model_year'),
                 list_price=data.get('list_price')
             )
-            
+
             response_data = {
                 'message': 'Product created successfully',
                 'product_id': new_product.product_id,
@@ -97,7 +150,6 @@ class ProductDetailView(View):
                     'category_name': product.category_id.category_name,
                     'model_year': product.model_year,
                     'list_price': str(product.list_price),
-                    # Có thể thêm thông tin tồn kho tại đây nếu cần
                 }
                 return JsonResponse(product_detail)
             else:
@@ -138,10 +190,8 @@ class ProductDetailView(View):
                     elif getattr(product, field) != data[field]:
                         setattr(product, field, data[field])
                         has_changes = True
-            
+
             if not has_changes and not data:
-                updated_product_data = Product.objects.filter(product_id=product_id).values().first()
-                # .values().first() không bao gồm tên Brand/Category, cần format lại nếu muốn trả về
                 return JsonResponse({
                     'product_id': product.product_id,
                     'product_name': product.product_name,
@@ -188,7 +238,7 @@ class ProductDetailView(View):
         except Exception as e:
             return JsonResponse({'error': f'Đã có lỗi xảy ra trong quá trình xóa: {str(e)}'}, status=500)
 
-
+# Các View cho Stock (giữ nguyên từ trước)
 @method_decorator(csrf_exempt, name='dispatch')
 class StockListView(View):
     """
@@ -200,9 +250,9 @@ class StockListView(View):
         for stock in stocks:
             stock_data.append({
                 'store_id': stock.store_id.store_id,
-                'store_name': stock.store_id.store_name, # Thêm tên cửa hàng
+                'store_name': stock.store_id.store_name,
                 'product_id': stock.product_id.product_id,
-                'product_name': stock.product_id.product_name, # Thêm tên sản phẩm
+                'product_name': stock.product_id.product_name,
                 'quantity': stock.quantity
             })
         return JsonResponse(stock_data, safe=False)
@@ -221,13 +271,12 @@ class StockListView(View):
                 store = Store.objects.get(store_id=data.get('store_id'))
             except Store.DoesNotExist:
                 return JsonResponse({'error': f"Cửa hàng với ID '{data.get('store_id')}' không tồn tại."}, status=404)
-            
+
             try:
                 product = Product.objects.get(product_id=data.get('product_id'))
             except Product.DoesNotExist:
                 return JsonResponse({'error': f"Sản phẩm với ID '{data.get('product_id')}' không tồn tại."}, status=404)
 
-            # Kiểm tra xem bản ghi Stock này đã tồn tại chưa (store_id, product_id là unique_together)
             if Stock.objects.filter(store_id=store, product_id=product).exists():
                 return JsonResponse({'error': 'Bản ghi tồn kho cho sản phẩm này tại cửa hàng này đã tồn tại. Hãy dùng PATCH để cập nhật.'}, status=409)
 
@@ -236,7 +285,7 @@ class StockListView(View):
                 product_id=product,
                 quantity=data.get('quantity')
             )
-            
+
             response_data = {
                 'store_id': new_stock.store_id.store_id,
                 'product_id': new_stock.product_id.product_id,
@@ -246,7 +295,7 @@ class StockListView(View):
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Dữ liệu JSON không hợp lệ'}, status=400)
-        except IntegrityError as e: # Catch IntegrityError for unique_together constraint
+        except IntegrityError as e:
             return JsonResponse({'error': f'Lỗi toàn vẹn dữ liệu: {str(e)}'}, status=409)
         except Exception as e:
             return JsonResponse({'error': f'Lỗi: {str(e)}'}, status=500)
@@ -285,10 +334,10 @@ class StockDetailView(View):
                 return JsonResponse({'error': 'Bản ghi tồn kho không tồn tại'}, status=404)
 
             data = json.loads(request.body.decode('utf-8'))
-            
+
             if 'quantity' not in data:
                 return JsonResponse({'error': 'Thiếu trường bắt buộc: quantity'}, status=400)
-            
+
             new_quantity = data.get('quantity')
             if stock.quantity != new_quantity:
                 stock.quantity = new_quantity
@@ -301,7 +350,6 @@ class StockDetailView(View):
                 return JsonResponse(updated_stock_data, status=200)
             else:
                 return JsonResponse({'message': 'Không có thay đổi nào được thực hiện.'}, status=200)
-
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Dữ liệu JSON không hợp lệ'}, status=400)
