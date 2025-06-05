@@ -85,6 +85,7 @@ Bạn có thể truy vấn trực tiếp cơ sở dữ liệu `db.sqlite3` bằn
 ```bash
 python manage.py makemigrations
 python manage.py migrate
+````
 
 ## Cấu trúc các app
 
