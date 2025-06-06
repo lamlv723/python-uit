@@ -32,19 +32,41 @@ Sau khi activate virtual environment, cài đặt thư viện trong file `requir
 pip install -r requirements.txt
 ```
 
+### 3.1. Tạo file cấu hình môi trường `.env`
+
+Sao chép file mẫu `.env.example` thành `.env`:
+
+```bash
+copy .env.example .env   # Windows
+```
+
+hoặc
+
+```bash
+cp .env.example .env     # Linux/macOS
+```
+
 ### 4. Chạy server phát triển
 
 ```bash
 python manage.py runserver
 ```
 
-* Truy cập trang chủ tại: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-* Truy cập trang admin tại: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+- Truy cập trang chủ tại: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+- Truy cập trang admin tại: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+
+### 4.1. Chạy test tự động
+
+Để kiểm tra các chức năng của dự án, bạn có thể chạy toàn bộ test bằng lệnh:
+
+```bash
+python manage.py test
+```
 
 ### 5. Tài khoản superuser
 
-* Username: `admin`
-* Password: `12345678`
+- Username: `admin`
+- Password: `12345678`
 
 ---
 
@@ -54,22 +76,29 @@ Bạn có thể truy vấn trực tiếp cơ sở dữ liệu `db.sqlite3` bằn
 
 1.  **Mở terminal của bạn và di chuyển đến thư mục gốc của dự án** (nơi chứa file `manage.py` và `db.sqlite3`).
     Ví dụ:
+
     ```bash
     cd path/to/bike_stores
     ```
 
 2.  **Kết nối với cơ sở dữ liệu:**
+
     ```bash
     sqlite3 db.sqlite3
     ```
+
     Lệnh này sẽ mở dấu nhắc của SQLite (`sqlite>`).
 
 3.  **Hiển thị các bảng có sẵn:**
+
     ```sqlite
     .tables
 
+    ```
+
 4.  **Chạy một truy vấn đơn giản:**
     Để chọn tất cả dữ liệu từ một bảng (ví dụ: một bảng có tên `customers` hoặc tên bảng cụ thể của bạn như `production_customer`):
+
     ```sqlite
     SELECT * FROM customers;
     ```
@@ -82,10 +111,11 @@ Bạn có thể truy vấn trực tiếp cơ sở dữ liệu `db.sqlite3` bằn
     ```
 
 **Lưu ý:** Nếu lệnh `.tables` không hiển thị gì hoặc các bảng của ứng dụng Django bị thiếu, có thể bạn cần chạy Django migrations trước:
+
 ```bash
 python manage.py makemigrations
 python manage.py migrate
-````
+```
 
 ## Cấu trúc các app
 
@@ -93,69 +123,77 @@ python manage.py migrate
 
 Quản lý các model liên quan đến sản phẩm:
 
-* `Category`:
+- `Category`:
 
-  * `category_id`
-  * `category_name`
-* `Brand`:
+  - `category_id`
+  - `category_name`
 
-  * `brand_id`
-  * `brand_name`
-* `Product`:
+- `Brand`:
 
-  * `product_id`
-  * `product_name`
-  * `brand_id` (FK → `Brand`)
-  * `category_id` (FK → `Category`)
-  * `model_year`
-  * `list_price`
+  - `brand_id`
+  - `brand_name`
 
-* `Stock`:
+- `Product`:
 
-  * `store_id` (FK → `Store`)
-  * `product_id` (FK → `Product`)
-  * `quantity`
-  * **Primary key**: (`store_id`, `product_id`)
+  - `product_id`
+  - `product_name`
+  - `brand_id` (FK → `Brand`)
+  - `category_id` (FK → `Category`)
+  - `model_year`
+  - `list_price`
+
+- `Stock`:
+
+  - `store_id` (FK → `Store`)
+  - `product_id` (FK → `Product`)
+  - `quantity`
+  - **Primary key**: (`store_id`, `product_id`)
+
 ### `sales`
 
 Quản lý khách hàng, nhân viên, cửa hàng và đơn hàng:
 
-* `Customer`:
+- `Customer`:
 
-  * `customer_id`
-  * `first_name`, `last_name`, `phone`, `email`
-  * `street`, `city`, `state`, `zip_code`
-* `Store`:
+  - `customer_id`
+  - `first_name`, `last_name`, `phone`, `email`
+  - `street`, `city`, `state`, `zip_code`
 
-  * `store_id`
-  * `store_name`, `phone`, `email`
-  * `street`, `city`, `state`, `zip_code`
-* `Staff`:
+- `Store`:
 
-  * `staff_id`
-  * `first_name`, `last_name`, `email`, `phone`
-  * `active`
-  * `store_id` (FK → `Store`)
-  * `manager_id` (FK → chính `Staff`)
-* `Order`:
+  - `store_id`
+  - `store_name`, `phone`, `email`
+  - `street`, `city`, `state`, `zip_code`
 
-  * `order_id`
-  * `customer_id` (FK → `Customer`)
-  * `order_status` (1=Pending, 2=Processing, 3=Rejected, 4=Completed)
-  * `order_date`, `required_date`, `shipped_date`
-  * `store_id` (FK → `Store`)
-  * `staff_id` (FK → `Staff`)
-* `OrderItem`:
+- `Staff`:
 
-  * `order_id` (FK → `Order`)
-  * `item_id`
-  * `product_id` (FK → `Product`)
-  * `quantity`
-  * `list_price`
-  * `discount`
-  * **Primary key**: (`order_id`, `item_id`)
+  - `staff_id`
+  - `first_name`, `last_name`, `email`, `phone`
+  - `active`
+  - `store_id` (FK → `Store`)
+  - `manager_id` (FK → chính `Staff`)
+
+- `Order`:
+
+  - `order_id`
+  - `customer_id` (FK → `Customer`)
+  - `order_status` (1=Pending, 2=Processing, 3=Rejected, 4=Completed)
+  - `order_date`, `required_date`, `shipped_date`
+  - `store_id` (FK → `Store`)
+  - `staff_id` (FK → `Staff`)
+
+- `OrderItem`:
+
+  - `order_id` (FK → `Order`)
+  - `item_id`
+  - `product_id` (FK → `Product`)
+  - `quantity`
+  - `list_price`
+  - `discount`
+  - **Primary key**: (`order_id`, `item_id`)
 
 ## Misc
+
 ```bash
 rm db.sqlite3
 rm production/migrations/00*.py
@@ -168,4 +206,8 @@ python3 manage.py migrate
 python3 manage.py createsuperuser
 
 sqlite3 db.sqlite3 < load_data_modified.sql
+```
+
+```
+
 ```
