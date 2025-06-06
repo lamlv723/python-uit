@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 from .models import Order, OrderItem, Staff, Store
+from production.models import Product  
 
 
 ######################### START #########################
@@ -179,18 +180,28 @@ class OrderListView(View):
             for field in required_fields:
                 if field not in data:
                     return JsonResponse({'error': f'Thiếu trường bắt buộc: {field}'}, status=400)
+            # Lấy instance cho các trường FK
+            customer = Customer.objects.get(pk=data.get('customer_id'))
+            store = Store.objects.get(pk=data.get('store_id'))
+            staff = Staff.objects.get(pk=data.get('staff_id'))
             new_order = Order.objects.create(
                 order_id=data.get('order_id'),
-                customer_id=data.get('customer_id'),
+                customer_id=customer,
                 order_status=data.get('order_status'),
                 order_date=data.get('order_date'),
                 required_date=data.get('required_date'),
                 shipped_date=data.get('shipped_date'),
-                store_id=data.get('store_id'),
-                staff_id=data.get('staff_id')
+                store_id=store,
+                staff_id=staff
             )
             response_data = Order.objects.filter(order_id=new_order.order_id).values().first()
             return JsonResponse(response_data, status=201)
+        except Customer.DoesNotExist:
+            return JsonResponse({'error': 'Customer không tồn tại'}, status=400)
+        except Store.DoesNotExist:
+            return JsonResponse({'error': 'Store không tồn tại'}, status=400)
+        except Staff.DoesNotExist:
+            return JsonResponse({'error': 'Staff không tồn tại'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Dữ liệu JSON không hợp lệ'}, status=400)
         except IntegrityError:
@@ -260,16 +271,23 @@ class OrderItemListView(View):
             for field in required_fields:
                 if field not in data:
                     return JsonResponse({'error': f'Thiếu trường bắt buộc: {field}'}, status=400)
+            # Lấy instance cho các trường FK
+            order = Order.objects.get(pk=data.get('order_id'))
+            product = Product.objects.get(pk=data.get('product_id'))
             new_item = OrderItem.objects.create(
-                order_id=data.get('order_id'),
+                order_id=order,
                 item_id=data.get('item_id'),
-                product_id=data.get('product_id'),
+                product_id=product,
                 quantity=data.get('quantity'),
                 list_price=data.get('list_price'),
                 discount=data.get('discount')
             )
             response_data = OrderItem.objects.filter(order_id=new_item.order_id, item_id=new_item.item_id).values().first()
             return JsonResponse(response_data, status=201)
+        except Order.DoesNotExist:
+            return JsonResponse({'error': 'Order không tồn tại'}, status=400)
+        except Product.DoesNotExist:
+            return JsonResponse({'error': 'Product không tồn tại'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Dữ liệu JSON không hợp lệ'}, status=400)
         except IntegrityError:
@@ -339,6 +357,11 @@ class StaffListView(View):
             for field in required_fields:
                 if field not in data:
                     return JsonResponse({'error': f'Thiếu trường bắt buộc: {field}'}, status=400)
+            # Lấy instance cho ForeignKey
+            store = Store.objects.get(pk=data.get('store_id'))
+            manager = None
+            if data.get('manager_id'):
+                manager = Staff.objects.get(pk=data.get('manager_id'))
             new_staff = Staff.objects.create(
                 staff_id=data.get('staff_id'),
                 first_name=data.get('first_name'),
@@ -346,11 +369,15 @@ class StaffListView(View):
                 email=data.get('email'),
                 phone=data.get('phone'),
                 active=data.get('active', True),
-                store_id=data.get('store_id'),
-                manager_id=data.get('manager_id')
+                store_id=store,
+                manager_id=manager
             )
             response_data = Staff.objects.filter(staff_id=new_staff.staff_id).values().first()
             return JsonResponse(response_data, status=201)
+        except Store.DoesNotExist:
+            return JsonResponse({'error': 'Store không tồn tại'}, status=400)
+        except Staff.DoesNotExist:
+            return JsonResponse({'error': 'Manager không tồn tại'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Dữ liệu JSON không hợp lệ'}, status=400)
         except IntegrityError:
