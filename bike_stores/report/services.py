@@ -2,7 +2,7 @@ from production.models import Stock, Product
 from sales.models import Store
 
 
-def get_inventory_report_data()->dict:
+def get_inventory_report_data(store_id=None)->dict:
     """
     Lấy dữ liệu tồn kho theo từng sản phẩm theo cửa hàng
     """
@@ -10,6 +10,9 @@ def get_inventory_report_data()->dict:
                        .select_related('product_id', 'store_id')
                        .order_by('store_id__store_name', 'product_id__product_name')
                     )
+
+    if store_id:
+        inventory_items = inventory_items.filter(store_id=store_id)
 
     report_data_grouped = {}
     for item in inventory_items:
@@ -25,5 +28,5 @@ def get_inventory_report_data()->dict:
             'product_name': product_name,
             'quantity': item.quantity,
         })
-    print(inventory_items)
+
     return report_data_grouped

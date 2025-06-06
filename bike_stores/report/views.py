@@ -14,9 +14,13 @@ class InventoryReportView(View):
     # template_name = 'analytics_app/inventory_report.html' # Không cần template nữa
 
     def get(self, request, *args, **kwargs):
-        inventory_data_grouped = get_inventory_report_data()
+        store_id = request.GET.get('store_id')
 
-        report_title = "Báo cáo Tồn kho theo Cửa hàng và Sản phẩm"
+        inventory_data_grouped = get_inventory_report_data(store_id=store_id)
+
+        report_title = "Báo cáo tồn kho theo cừa hàng và sản phẩm"
+        if store_id:
+            report_title = f"Báo cáo tồn kho theo cừa hàng và sản phẩm (store_id: {store_id})"
 
         response_data = {
             'report_title': report_title,
