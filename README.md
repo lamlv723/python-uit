@@ -36,16 +36,21 @@ pip install -r requirements.txt
 
 Sao chép file mẫu `.env.example` thành `.env`:
 
-````bash
-copy [.env.example](http://_vscodecontentref_/1) .env   # Windows
+```bash
+copy .env.example .env   # Windows
+```
+
 # hoặc
-cp [.env.example](http://_vscodecontentref_/2) .env     # Linux/macOS
+
+```bash
+cp .env.example .env     # Linux/macOS
+```
 
 ### 4. Chạy server phát triển
 
 ```bash
 python manage.py runserver
-````
+```
 
 - Truy cập trang chủ tại: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 - Truy cập trang admin tại: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
@@ -54,9 +59,9 @@ python manage.py runserver
 
 Để kiểm tra các chức năng của dự án, bạn có thể chạy toàn bộ test bằng lệnh:
 
-````bash
+```bash
 python manage.py test
-
+```
 
 ### 5. Tài khoản superuser
 
@@ -202,4 +207,7 @@ python3 manage.py createsuperuser
 
 sqlite3 db.sqlite3 < load_data_modified.sql
 ```
-````
+
+```
+
+```
