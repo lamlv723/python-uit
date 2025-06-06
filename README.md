@@ -40,7 +40,7 @@ Sao chép file mẫu `.env.example` thành `.env`:
 copy .env.example .env   # Windows
 ```
 
-# hoặc
+hoặc
 
 ```bash
 cp .env.example .env     # Linux/macOS
