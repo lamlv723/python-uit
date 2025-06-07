@@ -1,5 +1,4 @@
 from django.db import models
-from .fields import IntegerDateField
 
 class Customer(models.Model):
     customer_id = models.IntegerField(primary_key=True)
@@ -51,9 +50,9 @@ class Order(models.Model):
     ]
     customer_id = models.ForeignKey(Customer, db_column='customer_id', on_delete=models.CASCADE, null=True, blank=True)
     order_status = models.PositiveSmallIntegerField(choices=ORDER_STATUS_CHOICES)
-    order_date = IntegerDateField()
-    required_date = IntegerDateField()
-    shipped_date = IntegerDateField(null=True, blank=True)
+    order_date = models.DateField()
+    required_date = models.DateField()
+    shipped_date = models.DateField(null=True, blank=True)
     store_id = models.ForeignKey(Store, db_column='store_id', on_delete=models.CASCADE)
     staff_id = models.ForeignKey(Staff, db_column='staff_id', on_delete=models.PROTECT)
 
