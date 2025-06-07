@@ -32,7 +32,7 @@ class InventoryReportView(View):
         return JsonResponse(response_data)
 
 
-class SalesOverTimeReportView(View):
+class RevenueOverTimeReportView(View):
     """
     API trả về báo cáo doanh thu theo thời gian.
     Có thể lọc theo start_date, end_date và nhóm theo period.
@@ -67,14 +67,15 @@ class SalesOverTimeReportView(View):
         # Format lại dữ liệu để đảm bảo an toàn khi parse JSON phía client
         formatted_data = [
             {
-                "period": item["period"].strftime("%Y-%m-%d"),
-                "total_revenue": str(item["total_revenue"])
+                'period': item['period'].strftime('%Y-%m-%d'),
+                'total_revenue': f"{item['total_revenue']:.3f}"
             }
             for item in sales_data
         ]
 
         response_data = {
             'report_title': 'Báo cáo Doanh thu theo Thời gian',
+            'currency': 'VND',
             'query_params': {
                 'start_date': start_date_str,
                 'end_date': end_date_str,
