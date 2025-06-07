@@ -1,14 +1,9 @@
-from . import utils
-from datetime import date, timedelta
+from datetime import date
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.core.exceptions import ValidationError
-from django.utils.decorators import method_decorator
+from django.http import JsonResponse
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 
 from .services import get_inventory_report_data, get_sales_over_time_data
-import json
 
 
 # Create your views here.
