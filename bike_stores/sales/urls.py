@@ -8,7 +8,6 @@ from .views import (
 )
 
 urlpatterns = [
-    # path('<path>', views.<func>, name=''),  # template
     # CustomerListView
     path('customer/', CustomerListView.as_view(), name='customer-list'),  # GET
     path('customer/create/', CustomerListView.as_view(), name='customer-list-create'),  # POST

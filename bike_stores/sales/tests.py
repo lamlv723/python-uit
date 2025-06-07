@@ -1,15 +1,17 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from .models import Customer, Store, Staff, Order, OrderItem
-from production.models import Product
+from production.models import Product, Brand, Category
 import json
 from datetime import date
-from production.models import Product, Brand, Category
 
 class SalesAPITestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        # Tạo dữ liệu mẫu cho các test
+        self._create_sample_data()
+
+    def _create_sample_data(self):
+        # Store, Customer, Staff
         self.store = Store.objects.create(
             store_id=1, store_name="Test Store", phone="123", email="store@test.com",
             street="123 St", city="City", state="ST", zip_code="12345"
@@ -21,13 +23,14 @@ class SalesAPITestCase(TestCase):
             staff_id=1, first_name="Jane", last_name="Smith", email="jane@example.com",
             active=True, store_id=self.store
         )
-        # Tạo Brand và Category cho Product
+        # Brand, Category, Product
         self.brand = Brand.objects.create(brand_id=1, brand_name="TestBrand")
         self.category = Category.objects.create(category_id=1, category_name="TestCategory")
-        # Product cho OrderItem
         self.product = Product.objects.create(
-            product_id=1, product_name="Bike", brand_id=self.brand, category_id=self.category, model_year=2024, list_price=1000
+            product_id=1, product_name="Bike", brand_id=self.brand, category_id=self.category,
+            model_year=2024, list_price=1000
         )
+        # Order, OrderItem
         self.order = Order.objects.create(
             order_id=1, customer_id=self.customer, order_status=1,
             order_date=date.today(), required_date=date.today(),
@@ -38,52 +41,53 @@ class SalesAPITestCase(TestCase):
             quantity=2, list_price=1000, discount=0
         )
 
+    # ----------- CUSTOMER TESTS -----------
     def test_customer_list(self):
-        response = self.client.get(reverse('customer-list'))
+        url = reverse('customer-list')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(isinstance(response.json(), list))
+        self.assertIsInstance(response.json(), list)
 
     def test_create_customer(self):
+        url = reverse('customer-list-create')
         data = {
             "customer_id": 2,
             "first_name": "Alice",
             "last_name": "Wonder",
             "email": "alice@example.com"
         }
-        response = self.client.post(
-            reverse('customer-list-create'),
-            data=json.dumps(data),
-            content_type="application/json"
-        )
+        response = self.client.post(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json()['first_name'], "Alice")
 
     def test_get_customer_detail(self):
-        response = self.client.get(reverse('customer-detail', args=[self.customer.customer_id]))
+        url = reverse('customer-detail', args=[self.customer.customer_id])
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['first_name'], "John")
 
     def test_update_customer(self):
+        url = reverse('customer-detail', args=[self.customer.customer_id])
         data = {"first_name": "Johnny"}
-        response = self.client.patch(
-            reverse('customer-detail', args=[self.customer.customer_id]),
-            data=json.dumps(data),
-            content_type="application/json"
-        )
+        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['first_name'], "Johnny")
 
     def test_delete_customer(self):
-        response = self.client.delete(reverse('customer-detail', args=[self.customer.customer_id]))
+        url = reverse('customer-detail', args=[self.customer.customer_id])
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, 200)
         self.assertIn('được xóa thành công', response.json()['message'])
 
+    # ----------- ORDER TESTS -----------
     def test_order_list(self):
-        response = self.client.get(reverse('order-list'))
+        url = reverse('order-list')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(isinstance(response.json(), list))
+        self.assertIsInstance(response.json(), list)
 
     def test_create_order(self):
+        url = reverse('order-list')
         data = {
             "order_id": 2,
             "customer_id": self.customer.customer_id,
@@ -93,20 +97,19 @@ class SalesAPITestCase(TestCase):
             "store_id": self.store.store_id,
             "staff_id": self.staff.staff_id
         }
-        response = self.client.post(
-            reverse('order-list'),
-            data=json.dumps(data),
-            content_type="application/json"
-        )
+        response = self.client.post(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json()['order_id'], 2)
 
+    # ----------- ORDER ITEM TESTS -----------
     def test_orderitem_list(self):
-        response = self.client.get(reverse('orderitem-list'))
+        url = reverse('orderitem-list')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(isinstance(response.json(), list))
+        self.assertIsInstance(response.json(), list)
 
     def test_create_orderitem(self):
+        url = reverse('orderitem-list')
         data = {
             "order_id": self.order.order_id,
             "item_id": 2,
@@ -115,20 +118,19 @@ class SalesAPITestCase(TestCase):
             "list_price": 500,
             "discount": 0
         }
-        response = self.client.post(
-            reverse('orderitem-list'),
-            data=json.dumps(data),
-            content_type="application/json"
-        )
+        response = self.client.post(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json()['item_id'], 2)
-    
+
+    # ----------- STORE TESTS -----------
     def test_store_list(self):
-        response = self.client.get(reverse('store-list'))
+        url = reverse('store-list')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(isinstance(response.json(), list))
+        self.assertIsInstance(response.json(), list)
 
     def test_create_store(self):
+        url = reverse('store-list')
         data = {
             "store_id": 2,
             "store_name": "New Store",
@@ -139,26 +141,20 @@ class SalesAPITestCase(TestCase):
             "state": "NC",
             "zip_code": "67890"
         }
-        response = self.client.post(
-            reverse('store-list'),
-            data=json.dumps(data),
-            content_type="application/json"
-        )
+        response = self.client.post(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json()['store_name'], "New Store")
 
     def test_get_store_detail(self):
-        response = self.client.get(reverse('store-detail', args=[self.store.store_id]))
+        url = reverse('store-detail', args=[self.store.store_id])
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['store_name'], "Test Store")
 
     def test_update_store(self):
+        url = reverse('store-detail', args=[self.store.store_id])
         data = {"store_name": "Updated Store"}
-        response = self.client.patch(
-            reverse('store-detail', args=[self.store.store_id]),
-            data=json.dumps(data),
-            content_type="application/json"
-        )
+        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['store_name'], "Updated Store")
 
@@ -174,16 +170,20 @@ class SalesAPITestCase(TestCase):
             state="NA",
             zip_code="00000"
         )
-        response = self.client.delete(reverse('store-detail', args=[store.store_id]))
+        url = reverse('store-detail', args=[store.store_id])
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, 200)
         self.assertIn('được xóa thành công', response.json()['message'])
 
+    # ----------- STAFF TESTS -----------
     def test_staff_list(self):
-        response = self.client.get(reverse('staff-list'))
+        url = reverse('staff-list')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(isinstance(response.json(), list))
+        self.assertIsInstance(response.json(), list)
 
     def test_create_staff(self):
+        url = reverse('staff-list')
         data = {
             "staff_id": 2,
             "first_name": "Bob",
@@ -192,26 +192,20 @@ class SalesAPITestCase(TestCase):
             "active": True,
             "store_id": self.store.store_id
         }
-        response = self.client.post(
-            reverse('staff-list'),
-            data=json.dumps(data),
-            content_type="application/json"
-        )
+        response = self.client.post(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json()['first_name'], "Bob")
 
     def test_get_staff_detail(self):
-        response = self.client.get(reverse('staff-detail', args=[self.staff.staff_id]))
+        url = reverse('staff-detail', args=[self.staff.staff_id])
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['first_name'], "Jane")
 
     def test_update_staff(self):
+        url = reverse('staff-detail', args=[self.staff.staff_id])
         data = {"first_name": "Janet"}
-        response = self.client.patch(
-            reverse('staff-detail', args=[self.staff.staff_id]),
-            data=json.dumps(data),
-            content_type="application/json"
-        )
+        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['first_name'], "Janet")
 
@@ -224,8 +218,7 @@ class SalesAPITestCase(TestCase):
             active=True,
             store_id=self.store
         )
-        response = self.client.delete(reverse('staff-detail', args=[staff.staff_id]))
+        url = reverse('staff-detail', args=[staff.staff_id])
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, 200)
         self.assertIn('được xóa thành công', response.json()['message'])
-
-    
