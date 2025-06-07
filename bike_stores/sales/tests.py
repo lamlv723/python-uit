@@ -49,7 +49,7 @@ class SalesAPITestCase(TestCase):
         self.assertIsInstance(response.json(), list)
 
     def test_create_customer(self):
-        url = reverse('customer-list-create')
+        url = reverse('customer-list')
         data = {
             "customer_id": 2,
             "first_name": "Alice",

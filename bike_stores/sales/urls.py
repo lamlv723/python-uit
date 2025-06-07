@@ -8,13 +8,10 @@ from .views import (
 )
 
 urlpatterns = [
-    # CustomerListView
-    path('customer/', CustomerListView.as_view(), name='customer-list'),  # GET
-    path('customer/create/', CustomerListView.as_view(), name='customer-list-create'),  # POST
-    # CustomerDetailView
-    path('customer/<int:customer_id>/', CustomerDetailView.as_view(), name='customer-detail'),  # GET with param
-    path('customer/update/<int:customer_id>/', CustomerDetailView.as_view(), name='customer-detail'),  # PATCH with param
-    path('customer/delete/<int:customer_id>/', CustomerDetailView.as_view(), name='customer-detail'),  # DELETE with param
+    # path('<path>', views.<func>, name=''),  # template
+    # Customer
+    path('customer/', CustomerListView.as_view(), name='customer-list'),  # GET, POST
+    path('customer/<int:customer_id>/', CustomerDetailView.as_view(), name='customer-detail'),  # GET, PATCH, DELETE
 
     # Orders
     path('orders/', OrderListView.as_view(), name='order-list'),  # GET, POST
