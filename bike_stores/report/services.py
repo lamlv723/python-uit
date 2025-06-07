@@ -1,6 +1,11 @@
 from production.models import Stock, Product
-from sales.models import Store
+from sales.models import Store, OrderItem
 
+from datetime import date, timedelta
+from decimal import Decimal
+from django.db import models
+from django.db.models import functions as fn
+from collections import OrderedDict
 
 def get_inventory_report_data(store_id=None)->dict:
     """
@@ -30,3 +35,107 @@ def get_inventory_report_data(store_id=None)->dict:
         })
 
     return report_data_grouped
+
+
+
+
+
+def get_sales_over_time_data(end_date: date, start_date: date | None = None, period: str = 'month') -> list[dict]:
+    """
+    Lấy dữ liệu doanh thu, xử lý linh hoạt cả định dạng integer và text cho order_date.
+    """
+    # === Bước 1: Tạo biểu thức ép kiểu có điều kiện bằng Case...When ===
+
+    # Biểu thức để chuyển đổi integer (dạng YYYYMMDD) thành chuỗi date ('YYYY-MM-DD')
+    integer_to_date_str = (
+            fn.Substr(fn.Cast('order_id__order_date', output_field=models.CharField()), 1, 4) + '-' +
+            fn.Substr(fn.Cast('order_id__order_date', output_field=models.CharField()), 5, 2) + '-' +
+            fn.Substr(fn.Cast('order_id__order_date', output_field=models.CharField()), 7, 2)
+    )
+
+    # Sử dụng Case...When để áp dụng logic tùy theo kiểu dữ liệu của mỗi hàng
+    order_date_expr = models.Case(
+        models.When(
+            # Điều kiện: Nếu kiểu dữ liệu của order_date là 'integer'
+            condition=models.Q(order_id__order_date__regex=r'^\d{8}$'),  # Dùng regex để check YYYYMMDD
+            # Thì: Áp dụng logic chuyển đổi từ integer
+            then=fn.Cast(integer_to_date_str, output_field=models.DateField())
+        ),
+        # Trường hợp còn lại (mặc định): Giả sử đã là dạng chuỗi 'YYYY-MM-DD'
+        default=fn.Cast('order_id__order_date', output_field=models.DateField()),
+        # Kiểu dữ liệu cuối cùng của cả biểu thức là DateField
+        output_field=models.DateField()
+    )
+
+    # === Bước 2 và các bước còn lại giữ nguyên, nhưng sử dụng biểu thức mới ===
+    queryset = models.OrderItem.objects.annotate(casted_order_date=order_date_expr)
+
+    # Lọc bỏ các giá trị không hợp lệ mà sau khi ép kiểu vẫn là NULL
+    queryset = queryset.exclude(casted_order_date__isnull=True)
+
+    actual_range = queryset.aggregate(
+        first_date=models.Min('casted_order_date'),
+        last_date=models.Max('casted_order_date')
+    )
+
+    if not actual_range['first_date']:
+        return []
+
+    final_start_date = start_date if start_date else actual_range['first_date']
+    final_end_date = min(end_date, actual_range['last_date'])
+
+    if final_start_date > final_end_date:
+        return []
+
+    date_filters = {'casted_order_date__range': [final_start_date, final_end_date]}
+
+    time_trunc = {
+        'day': fn.TruncDay('casted_order_date'), 'week': fn.TruncWeek('casted_order_date'),
+        'month': fn.TruncMonth('casted_order_date'), 'quarter': fn.TruncQuarter('casted_order_date'),
+        'year': fn.TruncYear('casted_order_date'),
+    }.get(period, fn.TruncMonth('casted_order_date'))
+
+    sales_data_from_db = (
+        queryset.filter(**date_filters)
+        .annotate(period=time_trunc)
+        .values('period')
+        .annotate(total_revenue=models.Sum(
+            models.F('quantity') * models.F('list_price') * (Decimal('1.0') - models.F('discount')),
+            output_field=models.DecimalField()
+        ))
+    )
+
+    sales_by_period = {
+        item['period'].isoformat(): item['total_revenue'] for item in sales_data_from_db if item['period']
+    }
+
+    # Logic lấp đầy khoảng trống giữ nguyên như trước...
+    full_report_data = []
+    current_date = final_start_date
+
+    while current_date <= final_end_date:
+        if period == 'day':
+            period_start = current_date; current_date += timedelta(days=1)
+        elif period == 'week':
+            period_start = current_date - timedelta(days=current_date.weekday()); current_date += timedelta(weeks=1)
+        elif period == 'month':
+            period_start = date(current_date.year, current_date.month, 1)
+            next_month = current_date.month + 1;
+            next_year = current_date.year
+            if next_month > 12: next_month = 1; next_year += 1
+            current_date = date(next_year, next_month, 1)
+        elif period == 'quarter':
+            quarter = (current_date.month - 1) // 3 + 1
+            period_start = date(current_date.year, 3 * quarter - 2, 1)
+            current_date = period_start + timedelta(days=95)
+            current_date = date(current_date.year, ((current_date.month - 1) // 3) * 3 + 1, 1)
+        else:  # year
+            period_start = date(current_date.year, 1, 1)
+            current_date = date(current_date.year + 1, 1, 1)
+
+        if period_start <= final_end_date and (not full_report_data or full_report_data[-1]['period'] != period_start):
+            period_key = period_start.isoformat()
+            revenue = sales_by_period.get(period_key, models.Decimal('0.0'))
+            full_report_data.append({'period': period_start, 'total_revenue': revenue})
+
+    return full_report_data
