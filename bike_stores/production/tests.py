@@ -80,7 +80,7 @@ class ProductionAPITests(TestCase):
         data = json.loads(response.content)
 
         expected_trek_product_ids = sorted([1, 4, 7, 8, 9, 29, 32, 34, 39, 40, 42, 43, 47, 48, 49, 50, 51, 54, 55, 56, 57, 58, 59, 61, 62, 63, 83, 86, 87, 88, 89, 90, 91, 112, 113, 114, 115, 116, 117, 118, 119, 120, 123, 125, 129, 130, 132, 133, 134, 135, 136, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 162, 165, 166, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 193, 194, 196, 197, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 262, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 316, 317, 318, 319, 320, 321])
-        self.assertEqual(len(data), len(expected_trek_product_ids)) # Sửa lỗi thành 135 == 135
+        self.assertEqual(len(data), len(expected_trek_product_ids))
         self.assertEqual(self._get_product_ids(data), expected_trek_product_ids)
         for product in data:
             self.assertEqual(product['brand_name'], 'Trek')
@@ -904,13 +904,10 @@ class ProductionAdminTests(TestCase):
         """
         url = reverse('admin:production_category_changelist')
         
-        # SỬA LỖI: Thêm `follow=True` để client đi theo lệnh chuyển hướng (redirect)
         response = self.client.get(url, {'q': 'Mountain'}, follow=True)
         
-        # Giờ đây, response.status_code sẽ là 200 vì nó là trang cuối cùng sau khi chuyển hướng
+        # Bây giờ status_code sẽ là 200 của trang kết quả cuối cùng
         self.assertEqual(response.status_code, 200)
-        
-        # Vẫn kiểm tra xem nội dung mong muốn có trên trang cuối cùng hay không
         self.assertContains(response, 'Mountain Bikes')
         self.assertNotContains(response, 'Road Bikes')
 
@@ -933,35 +930,35 @@ class ProductionAdminTests(TestCase):
     #     self.assertContains(response, 'Trek 820 - 2016') # Tên sản phẩm
     #     self.assertContains(response, 'Santa Cruz Bikes') # Tên cửa hàng
 
-    # def test_stock_admin_search(self):
-    #     """
-    #     Kiểm tra ô tìm kiếm của StockAdmin (search_fields với __ lookup).
-    #     """
-    #     url = reverse('admin:production_stock_changelist')
-        
-    #     # Tìm theo tên sản phẩm
-    #     response = self.client.get(url, {'q': 'Trek 820'})
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertContains(response, 'Trek 820 - 2016')
-    #     self.assertNotContains(response, 'Ritchey Timberwolf')
-
-    #     # Tìm theo tên cửa hàng
-    #     response = self.client.get(url, {'q': 'Baldwin'})
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertContains(response, 'Baldwin Bikes')
-    #     self.assertNotContains(response, 'Santa Cruz Bikes')
-
-    # def test_stock_admin_filter_by_store(self):
+    def test_stock_admin_search(self):
         """
-        Kiểm tra bộ lọc của StockAdmin (list_filter).
+        Kiểm tra ô tìm kiếm của StockAdmin (search_fields với __ lookup).
         """
-        store_to_filter = Store.objects.get(store_name='Rowlett Bikes')
         url = reverse('admin:production_stock_changelist')
         
-        # Lọc theo store_id
-        response = self.client.get(url, {'store_id__id__exact': store_to_filter.pk})
+        # Tìm theo tên sản phẩm
+        response = self.client.get(url, {'q': 'Trek 820'})
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Trek 820 - 2016')
+        self.assertNotContains(response, 'Ritchey Timberwolf')
 
-        # Kết quả chỉ nên chứa cửa hàng 'Rowlett Bikes'
-        self.assertContains(response, 'Rowlett Bikes')
+        # Tìm theo tên cửa hàng
+        response = self.client.get(url, {'q': 'Baldwin'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Baldwin Bikes')
         self.assertNotContains(response, 'Santa Cruz Bikes')
+
+    # def test_stock_admin_filter_by_store(self):
+    #     """
+    #     Kiểm tra bộ lọc của StockAdmin (list_filter).
+    #     """
+    #     store_to_filter = Store.objects.get(store_name='Rowlett Bikes')
+    #     url = reverse('admin:production_stock_changelist')
+        
+    #     # Lọc theo store_id
+    #     response = self.client.get(url, {'store_id__id__exact': store_to_filter.pk})
+    #     self.assertEqual(response.status_code, 200)
+
+    #     # Kết quả chỉ nên chứa cửa hàng 'Rowlett Bikes'
+    #     self.assertContains(response, 'Rowlett Bikes')
+    #     self.assertNotContains(response, 'Santa Cruz Bikes')
