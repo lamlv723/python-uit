@@ -86,7 +86,7 @@ class RevenueReportView(View):
         return JsonResponse(response_data)
 
 
-class CustomerReportView(View):
+class CustomerAnalysisView(View):
     def get(self, request, *args, **kwargs):
         # Lấy các tham số từ URL
         start_date_str = request.GET.get('start_date')
