@@ -10,7 +10,7 @@ from .services import (
 )
 
 
-# Create your views here.
+# Inventory report
 class InventoryReportView(View):
     # template_name = 'analytics_app/inventory_report.html'
 
@@ -19,9 +19,9 @@ class InventoryReportView(View):
 
         inventory_data_grouped = get_inventory_report_data(store_id=store_id)
 
-        report_title = "Báo cáo tồn kho theo cừa hàng và sản phẩm"
+        report_title = "Báo cáo hàng tồn kho"
         if store_id:
-            report_title = f"Báo cáo tồn kho theo cừa hàng và sản phẩm (store_id: {store_id})"
+            report_title = f"Báo cáo hàng tồn kho (store_id: {store_id})"
 
         response_data = {
             'report_title': report_title,
@@ -31,6 +31,7 @@ class InventoryReportView(View):
         return JsonResponse(response_data)
 
 
+# Revenue report
 class RevenueReportView(View):
     """
     API trả về báo cáo doanh thu theo thời gian.
@@ -73,7 +74,7 @@ class RevenueReportView(View):
         ]
 
         response_data = {
-            'report_title': 'Báo cáo Doanh thu theo Thời gian',
+            'report_title': 'Báo cáo doanh thu bán hàng',
             'currency': 'VND',
             'query_params': {
                 'start_date': start_date_str,
@@ -86,6 +87,7 @@ class RevenueReportView(View):
         return JsonResponse(response_data)
 
 
+# Customer analysis - Patero
 class CustomerAnalysisView(View):
     def get(self, request, *args, **kwargs):
         # Lấy các tham số từ URL
