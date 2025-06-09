@@ -1,10 +1,13 @@
 from production.models import Stock, Product
 from sales.models import Store, OrderItem
+from .utils import calculate_percentile_rank
 
 from datetime import date, timedelta
 from decimal import Decimal
 from django.db import models
 from django.db.models import functions as fn
+
+import math
 
 def get_inventory_report_data(store_id=None)->dict:
     """
@@ -145,3 +148,85 @@ def get_sales_over_time_data(end_date: date, start_date: date | None = None, per
             full_report_data.append({'period': period_start, 'total_revenue': revenue})
 
     return full_report_data
+
+
+def get_pareto_customer_analysis(end_date: date, start_date: date | None = None) -> dict:
+    """
+    Phân tích khách hàng theo nguyên lý Pareto.
+    Xác định 20% khách hàng hàng đầu và xem họ tạo ra bao nhiêu % doanh thu.
+    """
+    order_date_expr = models.Case(
+        models.When(
+            condition=models.Q(order_id__order_date__regex=r'^\d{8}$'),
+            then=fn.Cast(
+                fn.Concat(
+                    fn.Substr(fn.Cast('order_id__order_date', output_field=models.CharField()), 1, 4),
+                    models.Value('-'),
+                    fn.Substr(fn.Cast('order_id__order_date', output_field=models.CharField()), 5, 2),
+                    models.Value('-'),
+                    fn.Substr(fn.Cast('order_id__order_date', output_field=models.CharField()), 7, 2)
+                ),
+                output_field=models.DateField()
+            )
+        ),
+        default=fn.Cast('order_id__order_date', output_field=models.DateField()),
+        output_field=models.DateField()
+    )
+    queryset = OrderItem.objects.annotate(casted_order_date=order_date_expr).exclude(casted_order_date__isnull=True)
+    date_filters = {}
+    if start_date: date_filters['casted_order_date__gte'] = start_date
+    if end_date: date_filters['casted_order_date__lte'] = end_date
+    if date_filters: queryset = queryset.filter(**date_filters)
+
+    customer_revenues_qs = (
+        queryset
+        .values('order_id__customer_id', 'order_id__customer_id__first_name', 'order_id__customer_id__last_name')
+        .annotate(customer_revenue=models.Sum(
+            models.F('quantity') * models.F('list_price') * (Decimal('1.0') - models.F('discount'))
+        ))
+        .order_by('-customer_revenue')  # Sắp xếp giảm dần theo doanh thu
+    )
+
+    customer_revenues_list = list(customer_revenues_qs)
+
+    if not customer_revenues_list:
+        return {'summary': 'Không có dữ liệu doanh thu trong khoảng thời gian đã chọn.', 'top_customers': []}
+
+    total_customer_count = len(customer_revenues_list)
+    grand_total_revenue = sum(c['customer_revenue'] for c in customer_revenues_list)
+
+    top_20_percent_count = math.ceil(total_customer_count * 0.2)
+
+    top_customers_group = customer_revenues_list[:top_20_percent_count]
+
+    all_revenues_sorted = sorted([c['customer_revenue'] for c in customer_revenues_list])
+
+    top_customers_result = []
+    for rank, customer_data in enumerate(top_customers_group):
+        percentile = calculate_percentile_rank(all_revenues_sorted, customer_data['customer_revenue'])
+
+        top_customers_result.append({
+            "rank": rank + 1,
+            "customer_id": customer_data['order_id__customer_id'],
+            "full_name": f"{customer_data['order_id__customer_id__first_name']} {customer_data['order_id__customer_id__last_name']}",
+            "revenue": customer_data['customer_revenue'],
+            "percentile_rank": percentile,
+        })
+
+    revenue_from_top_group = sum(c['revenue'] for c in top_customers_result)
+    percentage_revenue_from_top_group = (revenue_from_top_group / grand_total_revenue) * 100 if grand_total_revenue else 0
+
+    summary = {
+        "grand_total_revenue": grand_total_revenue,
+        "total_customer_count": total_customer_count,
+        "top_20_percent_group_summary": {
+            "customer_count": top_20_percent_count,
+            "revenue_generated": revenue_from_top_group,
+            "percentage_of_total_revenue": percentage_revenue_from_top_group
+        }
+    }
+
+    return {
+        "summary": summary,
+        "top_customers": top_customers_result
+    }

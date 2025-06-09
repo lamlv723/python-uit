@@ -3,7 +3,11 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views import View
 
-from .services import get_inventory_report_data, get_sales_over_time_data
+from .services import (
+    get_inventory_report_data
+    , get_sales_over_time_data
+    , get_pareto_customer_analysis
+)
 
 
 # Create your views here.
@@ -77,6 +81,42 @@ class RevenueOverTimeReportView(View):
                 'period': period,
             },
             'data': formatted_data
+        }
+
+        return JsonResponse(response_data)
+
+
+class ParetoCustomerReportView(View):
+    def get(self, request, *args, **kwargs):
+        # ... logic lấy start_date, end_date giữ nguyên ...
+        start_date_str = request.GET.get('start_date')
+        end_date_str = request.GET.get('end_date', date.today().isoformat())
+        try:
+            end_date = date.fromisoformat(end_date_str)
+            start_date = date.fromisoformat(start_date_str) if start_date_str else None
+        except ValueError:
+            return JsonResponse({'error': "Định dạng ngày không hợp lệ..."}, status=400)
+
+        analysis_data = get_pareto_customer_analysis(start_date=start_date, end_date=end_date)
+
+        # Định dạng lại các số để hiển thị đẹp hơn
+        summary = analysis_data.get('summary', {})
+        if isinstance(summary, dict):
+             summary['grand_total_revenue'] = f"{summary.get('grand_total_revenue', 0):.2f}"
+             if 'top_20_percent_group_summary' in summary:
+                 group_summary = summary['top_20_percent_group_summary']
+                 group_summary['revenue_generated'] = f"{group_summary.get('revenue_generated', 0):.2f}"
+                 group_summary['percentage_of_total_revenue'] = f"{group_summary.get('percentage_of_total_revenue', 0):.2f}%"
+
+        top_customers = analysis_data.get('top_customers', [])
+        for customer in top_customers:
+            customer['revenue'] = f"{customer.get('revenue', 0):.2f}"
+            customer['percentile_rank'] = f"{customer.get('percentile_rank', 0):.2f}"
+
+        response_data = {
+            'report_title': f"Phân tích khách hàng",
+            'query_params': {'start_date': start_date_str, 'end_date': end_date_str},
+            'analysis': analysis_data
         }
 
         return JsonResponse(response_data)
