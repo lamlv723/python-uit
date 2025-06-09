@@ -31,7 +31,7 @@ class InventoryReportView(View):
         return JsonResponse(response_data)
 
 
-class RevenueOverTimeReportView(View):
+class RevenueReportView(View):
     """
     API trả về báo cáo doanh thu theo thời gian.
     Có thể lọc theo start_date, end_date và nhóm theo period.
@@ -86,7 +86,7 @@ class RevenueOverTimeReportView(View):
         return JsonResponse(response_data)
 
 
-class ParetoCustomerReportView(View):
+class CustomerReportView(View):
     def get(self, request, *args, **kwargs):
         # Lấy các tham số từ URL
         start_date_str = request.GET.get('start_date')
