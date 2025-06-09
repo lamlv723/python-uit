@@ -44,7 +44,7 @@ def get_inventory_report_data(store_id=None)->dict:
     return report_data_grouped
 
 
-def get_sales_over_time_data(end_date: date, start_date: date | None = None, period: str = 'month') -> list[dict]:
+def get_revenue_report_data(end_date: date, start_date: date | None = None, period: str = 'month') -> list[dict]:
     """
     Lấy dữ liệu doanh thu, xử lý linh hoạt cả định dạng integer (YYYYMMDD)
     và text (YYYY-MM-DD) cho trường order_date.

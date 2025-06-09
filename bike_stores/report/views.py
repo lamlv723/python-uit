@@ -5,7 +5,7 @@ from django.views import View
 
 from .services import (
     get_inventory_report_data
-    , get_sales_over_time_data
+    , get_revenue_report_data
     , get_pareto_customer_analysis
 )
 
@@ -61,7 +61,7 @@ class RevenueOverTimeReportView(View):
             )
 
         # Gọi hàm service để lấy dữ liệu
-        sales_data = get_sales_over_time_data(start_date=start_date, end_date=end_date, period=period)
+        sales_data = get_revenue_report_data(start_date=start_date, end_date=end_date, period=period)
 
         # Format lại dữ liệu để đảm bảo an toàn khi parse JSON phía client
         formatted_data = [
