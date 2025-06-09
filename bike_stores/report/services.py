@@ -50,7 +50,7 @@ def get_sales_over_time_data(end_date: date, start_date: date | None = None, per
     và text (YYYY-MM-DD) cho trường order_date.
     """
 
-    # === Tạo biểu thức để ép kiểu có điều kiện ===
+
     queryset_with_str_date = OrderItem.objects.annotate(
         order_date_str=fn.Cast('order_id__order_date', output_field=models.CharField())
     )
@@ -150,11 +150,12 @@ def get_sales_over_time_data(end_date: date, start_date: date | None = None, per
     return full_report_data
 
 
-def get_pareto_customer_analysis(end_date: date, start_date: date | None = None) -> dict:
+def get_pareto_customer_analysis(end_date: date, start_date: date | None = None, store_id: int | None = None) -> dict:
     """
-    Phân tích khách hàng theo nguyên lý Pareto.
-    Xác định 20% khách hàng hàng đầu và xem họ tạo ra bao nhiêu % doanh thu.
+    Phân tích khách hàng theo nguyên lý Pareto, có thể lọc theo cửa hàng.
+    Gán cờ is_8020 cho nhóm khách hàng top và trả về toàn bộ danh sách.
     """
+
     order_date_expr = models.Case(
         models.When(
             condition=models.Q(order_id__order_date__regex=r'^\d{8}$'),
@@ -173,47 +174,66 @@ def get_pareto_customer_analysis(end_date: date, start_date: date | None = None)
         output_field=models.DateField()
     )
     queryset = OrderItem.objects.annotate(casted_order_date=order_date_expr).exclude(casted_order_date__isnull=True)
+
     date_filters = {}
     if start_date: date_filters['casted_order_date__gte'] = start_date
     if end_date: date_filters['casted_order_date__lte'] = end_date
     if date_filters: queryset = queryset.filter(**date_filters)
 
+    # Lọc theo store_id nếu được cung cấp
+    if store_id:
+        queryset = queryset.filter(order_id__store_id=store_id)
+        try:
+            store_name = Store.objects.get(pk=store_id).store_name
+        except Store.DoesNotExist:
+            store_name = f"Không tìm thấy cửa hàng ID {store_id}"
+    else:
+        store_name = "Toàn hệ thống"
+
+
     customer_revenues_qs = (
         queryset
-        .values('order_id__customer_id', 'order_id__customer_id__first_name', 'order_id__customer_id__last_name')
+        .values('order_id__customer_id', 'order_id__customer_id__first_name', 'order_id__customer_id__last_name',
+                'order_id__customer_id__email')
         .annotate(customer_revenue=models.Sum(
             models.F('quantity') * models.F('list_price') * (Decimal('1.0') - models.F('discount'))
         ))
-        .order_by('-customer_revenue')  # Sắp xếp giảm dần theo doanh thu
+        .order_by('-customer_revenue')
     )
 
     customer_revenues_list = list(customer_revenues_qs)
 
     if not customer_revenues_list:
-        return {'summary': 'Không có dữ liệu doanh thu trong khoảng thời gian đã chọn.', 'top_customers': []}
+        return {'summary': 'Không có dữ liệu doanh thu phù hợp.', 'customers': [], 'store_name': store_name}
+
 
     total_customer_count = len(customer_revenues_list)
-    grand_total_revenue = sum(c['customer_revenue'] for c in customer_revenues_list)
-
     top_20_percent_count = math.ceil(total_customer_count * 0.2)
 
-    top_customers_group = customer_revenues_list[:top_20_percent_count]
 
+    top_customer_ids = {c['order_id__customer_id'] for c in customer_revenues_list[:top_20_percent_count]}
+
+
+    all_customers_result = []
     all_revenues_sorted = sorted([c['customer_revenue'] for c in customer_revenues_list])
 
-    top_customers_result = []
-    for rank, customer_data in enumerate(top_customers_group):
+    for rank, customer_data in enumerate(customer_revenues_list):
+        customer_id = customer_data['order_id__customer_id']
         percentile = calculate_percentile_rank(all_revenues_sorted, customer_data['customer_revenue'])
 
-        top_customers_result.append({
+        all_customers_result.append({
             "rank": rank + 1,
-            "customer_id": customer_data['order_id__customer_id'],
+            "customer_id": customer_id,
             "full_name": f"{customer_data['order_id__customer_id__first_name']} {customer_data['order_id__customer_id__last_name']}",
+            "email": customer_data['order_id__customer_id__email'],
             "revenue": customer_data['customer_revenue'],
             "percentile_rank": percentile,
+            "is_8020": customer_id in top_customer_ids  # Gán cờ True/False
         })
 
-    revenue_from_top_group = sum(c['revenue'] for c in top_customers_result)
+    top_customers_group = customer_revenues_list[:top_20_percent_count]
+    revenue_from_top_group = sum(c['customer_revenue'] for c in top_customers_group)
+    grand_total_revenue = sum(c['customer_revenue'] for c in customer_revenues_list)
     percentage_revenue_from_top_group = (revenue_from_top_group / grand_total_revenue) * 100 if grand_total_revenue else 0
 
     summary = {
@@ -227,6 +247,7 @@ def get_pareto_customer_analysis(end_date: date, start_date: date | None = None)
     }
 
     return {
+        "store_name": store_name,
         "summary": summary,
-        "top_customers": top_customers_result
+        "customers": all_customers_result,
     }
