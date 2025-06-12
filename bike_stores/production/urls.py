@@ -1,5 +1,4 @@
 from django.urls import path
-# Sử dụng import nhiều dòng để dễ đọc và quản lý khi có nhiều view
 from .views import (
     ProductListView,
     ProductDetailView,
@@ -9,7 +8,6 @@ from .views import (
 
 urlpatterns = [
     # Product API
-    # Sử dụng định dạng nhiều dòng cho các hàm path() để rõ ràng, nhất quán
     path(
         "products/",
         ProductListView.as_view(),

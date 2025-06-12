@@ -3,7 +3,6 @@ from django.urls import reverse
 from decimal import Decimal
 from production.models import Category, Brand, Product, Stock
 from sales.models import Store
-
 from django.contrib.auth.models import User
 from django.urls import reverse
 
@@ -11,7 +10,7 @@ import json
 
 class ProductionAPITests(TestCase):
 
-    # Load data from the fixture file
+    # Tải dữ liệu
     fixtures = ['production_initial_data']
 
     @classmethod
@@ -24,7 +23,7 @@ class ProductionAPITests(TestCase):
         cls.brand_heller = Brand.objects.get(brand_id=3)
         cls.brand_purecycles = Brand.objects.get(brand_id=4)
         cls.brand_ritchey = Brand.objects.get(brand_id=5)
-        # cls.brand_strider = Brand.objects.get(brand_id=6) # Not used in Products, so omit if not needed
+        cls.brand_strider = Brand.objects.get(brand_id=6)
         cls.brand_sun_bicycles = Brand.objects.get(brand_id=7)
         cls.brand_surly = Brand.objects.get(brand_id=8)
         cls.brand_trek = Brand.objects.get(brand_id=9)
@@ -41,8 +40,8 @@ class ProductionAPITests(TestCase):
         cls.store_baldwin = Store.objects.get(store_id=2)
         cls.store_rowlett = Store.objects.get(store_id=3)
 
-        # Retrieve specific product objects from the fixture for easier testing
-        # Các sản phẩm này chỉ được sử dụng để lấy product_id, không phải để đếm số lượng tổng.
+        # Lấy các đối tượng sản phẩm cụ thể từ fixture
+        # Lấy product_id
         cls.product_trek_820 = Product.objects.get(product_id=1)
         cls.product_ritchey = Product.objects.get(product_id=2)
         cls.product_surly_wednesday = Product.objects.get(product_id=3)
@@ -65,11 +64,11 @@ class ProductionAPITests(TestCase):
         cls.stock_trek_820_santa_cruz = Stock.objects.get(store_id=cls.store_santa_cruz, product_id=cls.product_trek_820)
         cls.stock_ritchey_santa_cruz = Stock.objects.get(store_id=cls.store_santa_cruz, product_id=cls.product_ritchey)
 
-    #--- Helper method to extract product IDs for sorting verification ---
+    #--- Trích xuất ID sản phẩm cho việc Verify sắp xếp ---
     def _get_product_ids(self, data):
         return [item['product_id'] for item in data]
 
-    # --- Test cases cho Lọc sản phẩm theo Brand ---
+    # --- Test case lọc sản phẩm theo Brand ---
     def test_filter_by_brand(self):
         """
         Kiểm tra lọc sản phẩm theo brand_id.
@@ -108,7 +107,7 @@ class ProductionAPITests(TestCase):
         self.assertIn('brand_id phải là một số nguyên hợp lệ.', response.json()['error'])
 
 
-    #--- Test cases cho Lọc sản phẩm theo Category ---
+    #--- Test case lọc sản phẩm theo Category ---
     def test_filter_by_category(self):
         """
         Kiểm tra lọc sản phẩm theo category_id.
@@ -145,28 +144,25 @@ class ProductionAPITests(TestCase):
         response = self.client.get(reverse('product-list-create') + '?category_id=xyz')
         self.assertEqual(response.status_code, 400)
         self.assertIn('category_id phải là một số nguyên hợp lệ.', response.json()['error'])
-
-
     
-    
-    #--- Test cases cho Lọc sản phẩm theo khoảng giá ---
+    #--- Test case lọc sản phẩm theo khoảng giá ---
     def test_filter_by_price_range(self):
         """
         Kiểm tra lọc sản phẩm theo khoảng giá.
         """
-        # Giá từ 500.00 đến 1000.00 (bao gồm)
+        # Giá từ 500.00 đến 1000.00
         response = self.client.get(reverse('product-list-create') + '?min_price=500&max_price=1000')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
 
-        # ID sản phẩm trong khoảng 500-1000 (đã kiểm tra từ load_data_modified.sql)
+        # ID sản phẩm trong khoảng 500-1000
         expected_product_ids_500_1000 = sorted([
             2, 3, 12, 15, 16, 20, 24, 26, 27, 29, 30, 35, 36, 38, 44, 45, 52, 53, 70, 72, 73, 
-    75, 77, 78, 80, 82, 103, 105, 114, 116, 118, 123, 129, 130, 158, 166, 167, 
-    178, 179, 180, 212, 214, 215, 216, 217, 219, 223, 225, 226, 231, 233, 234, 
-    235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 
-    254, 255, 256, 257, 260, 261, 299, 300, 301, 304, 305, 306, 307, 308, 309, 
-    310, 311, 312, 314, 315])
+            75, 77, 78, 80, 82, 103, 105, 114, 116, 118, 123, 129, 130, 158, 166, 167, 
+            178, 179, 180, 212, 214, 215, 216, 217, 219, 223, 225, 226, 231, 233, 234, 
+            235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 
+            254, 255, 256, 257, 260, 261, 299, 300, 301, 304, 305, 306, 307, 308, 309, 
+            310, 311, 312, 314, 315])
         # Kiểm tra lại số lượng thực tế từ file SQL:
         self.assertEqual(len(data), len(expected_product_ids_500_1000))
         self.assertEqual(self._get_product_ids(data), expected_product_ids_500_1000)
@@ -179,7 +175,7 @@ class ProductionAPITests(TestCase):
         response = self.client.get(reverse('product-list-create') + '?min_price=3000')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
-        # ID sản phẩm trên 3000 (đã kiểm tra từ load_data_modified.sql)
+        # ID sản phẩm trên 3000
         expected_product_ids_over_3000 = sorted([
             7, 40, 43, 47, 49, 50, 51, 54, 56, 58, 61, 62, 63, 115, 140, 142, 
             146, 148, 149, 150, 153, 154, 155, 156, 157, 160, 169, 171, 172, 
@@ -197,7 +193,7 @@ class ProductionAPITests(TestCase):
         response = self.client.get(reverse('product-list-create') + '?max_price=300')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
-        # ID sản phẩm dưới 300 (đã kiểm tra từ load_data_modified.sql)
+        # ID sản phẩm dưới 300
         expected_product_ids_under_300 = sorted([
             13, 14, 21, 22, 23, 66, 67, 76, 83, 84, 86, 87, 88, 89, 90, 92, 
             93, 94, 95, 99, 213, 220, 222, 262, 263, 264, 265, 267, 268, 269, 
@@ -227,21 +223,21 @@ class ProductionAPITests(TestCase):
         self.assertIn('max_price phải là một số hợp lệ.', response.json()['error'])
 
 
-    # --- Test cases cho Sắp xếp sản phẩm ---
+    # --- Test case sắp xếp sản phẩm ---
     def test_sort_products(self):
         """
         Kiểm tra sắp xếp sản phẩm theo các tiêu chí khác nhau.
         """
-        # Sắp xếp theo tên sản phẩm (mặc định ASC)
+        # Sắp xếp theo tên sản phẩm ASC
         response = self.client.get(reverse('product-list-create') + '?sort_by=product_name')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
 
         product_names = [p['product_name'] for p in data]
-        # Verify if the list is sorted alphabetically
+        # Verify danh sách đã được sắp xếp theo thứ tự bảng chữ cái
         self.assertEqual(product_names, sorted(product_names))
 
-        # Sắp xếp theo giá (ASC)
+        # Sắp xếp theo giá ASC
         response = self.client.get(reverse('product-list-create') + '?sort_by=list_price&order_by=asc')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -249,7 +245,7 @@ class ProductionAPITests(TestCase):
         product_prices = [Decimal(p['list_price']) for p in data]
         self.assertEqual(product_prices, sorted(product_prices))
 
-        # Sắp xếp theo giá (DESC)
+        # Sắp xếp theo giá DESC
         response = self.client.get(reverse('product-list-create') + '?sort_by=list_price&order_by=desc')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -257,7 +253,7 @@ class ProductionAPITests(TestCase):
         product_prices = [Decimal(p['list_price']) for p in data]
         self.assertEqual(product_prices, sorted(product_prices, reverse=True))
 
-        # Sắp xếp theo model_year (DESC)
+        # Sắp xếp theo model_year DESC
         response = self.client.get(reverse('product-list-create') + '?sort_by=model_year&order_by=desc')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -265,12 +261,12 @@ class ProductionAPITests(TestCase):
         product_model_years = [p['model_year'] for p in data]
         self.assertEqual(product_model_years, sorted(product_model_years, reverse=True))
 
-        # Sắp xếp theo trường không hợp lệ
+        # Sắp xếp theo field không hợp lệ
         response = self.client.get(reverse('product-list-create') + '?sort_by=invalid_field')
         self.assertEqual(response.status_code, 400)
         self.assertIn('Trường sắp xếp không hợp lệ.', response.json()['error'])
 
-    # --- Test kết hợp lọc và sắp xếp ---
+    # --- Test case kết hợp lọc và sắp xếp ---
     def test_filter_and_sort_combined(self):
         """
         Kiểm tra kết hợp lọc theo category_id, khoảng giá và sắp xếp theo tên.
@@ -282,7 +278,6 @@ class ProductionAPITests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
 
-        # Cập nhật số lượng dự kiến theo dữ liệu fixture của bạn (25 sản phẩm)
         expected_combined_product_ids = sorted([
             4, 5, 8, 28, 31, 39, 41, 42, 46, 117, 120, 121, 122, 124, 128, 131, 132, 133, 134, 135, 136, 137, 138, 139, 141
         ])
@@ -295,7 +290,6 @@ class ProductionAPITests(TestCase):
             self.assertTrue(Decimal('1000.00') <= price <= Decimal('3000.00'))
 
         # Kiểm tra sắp xếp
-        # Lấy tên sản phẩm thực tế từ data và sắp xếp chúng
         actual_names = [p['product_name'] for p in data]
         self.assertEqual(actual_names, sorted(actual_names))
 
@@ -308,7 +302,7 @@ class ProductionAPITests(TestCase):
         # Tổng số sản phẩm trong load_data_modified.sql là 321
         self.assertEqual(len(data), 321)
         
-        # Verify a specific product's data (using product_id=1 from SQL)
+        # Verify dữ liệu của một sản phẩm cụ thể (sử dụng product_id=1 từ SQL)
         found_product = next((item for item in data if item['product_id'] == self.product_trek_820.product_id), None)
         self.assertIsNotNone(found_product)
         self.assertEqual(found_product['product_name'], 'Trek 820 - 2016')
@@ -319,12 +313,11 @@ class ProductionAPITests(TestCase):
 
     def test_product_create_post_success(self):
         """
-        Test POST /api/production/products/ for successful creation.
-        Uses a product_id that is highly unlikely to exist in the provided SQL data.
+        Kiểm tra POST /api/production/products/ tạo mới thành công.
         """
         initial_product_count = Product.objects.count()
         new_product_data = {
-            'product_id': 999999, # A very large ID to ensure it's new
+            'product_id': 999999, 
             'product_name': 'Brand New Custom Bike 2025',
             'brand_id': self.brand_electra.brand_id,
             'category_id': self.category_road.category_id,
@@ -344,7 +337,7 @@ class ProductionAPITests(TestCase):
 
     def test_product_create_post_missing_field(self):
         """
-        Test POST /api/production/products/ with missing required fields.
+        Kiểm tra POST /api/production/products/ với các trường bắt buộc bị thiếu.
         """
         response = self.client.post(
             reverse('product-list-create'),
@@ -357,12 +350,12 @@ class ProductionAPITests(TestCase):
 
     def test_product_create_post_duplicate_id(self):
         """
-        Test POST /api/production/products/ with an already existing product_id.
-        Should return a 409 Conflict.
+        Kiểm tra POST /api/production/products/ với product_id đã tồn tại.
+        Expected trả về lỗi 409 Conflict.
         """
         response = self.client.post(
             reverse('product-list-create'),
-            data=json.dumps({'product_id': self.product_trek_820.product_id, # Existing ID from fixture
+            data=json.dumps({'product_id': self.product_trek_820.product_id,
                              'product_name': 'Duplicate Trek 820 Attempt',
                              'brand_id': self.brand_trek.brand_id,
                              'category_id': self.category_mountain.category_id,
@@ -370,20 +363,20 @@ class ProductionAPITests(TestCase):
                              'list_price': '379.99'}),
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, 409) # 409 Conflict
+        self.assertEqual(response.status_code, 409)
         self.assertIn('đã tồn tại', response.json()['error'])
 
     def test_product_create_post_non_existent_foreign_key(self):
         """
-        Test POST /api/production/products/ with non-existent brand_id or category_id.
-        Should return a 404 Not Found.
+        Kiểm tra POST /api/production/products/ với brand_id hoặc category_id không tồn tại.
+        Expected trả về lỗi 404 Not Found.
         """
-        # Test non-existent brand_id
+        # Kiểm tra brand_id không tồn tại
         response = self.client.post(
             reverse('product-list-create'),
             data=json.dumps({'product_id': 999997,
                              'product_name': 'Product with Invalid Brand',
-                             'brand_id': 99999, # Highly unlikely to exist
+                             'brand_id': 99999,
                              'category_id': self.category_mountain.category_id,
                              'model_year': 2025,
                              'list_price': '100.00'}),
@@ -392,13 +385,13 @@ class ProductionAPITests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertIn('Brand với ID', response.json()['error'])
 
-        # Test non-existent category_id
+        # Kiểm tra category_id không tồn tại
         response = self.client.post(
             reverse('product-list-create'),
             data=json.dumps({'product_id': 999996,
                              'product_name': 'Product with Invalid Category',
                              'brand_id': self.brand_trek.brand_id,
-                             'category_id': 99999, # Highly unlikely to exist
+                             'category_id': 99999,
                              'model_year': 2025,
                              'list_price': '100.00'}),
             content_type='application/json'
@@ -409,7 +402,7 @@ class ProductionAPITests(TestCase):
 
     def test_product_detail_get_success(self):
         """
-        Test GET /api/production/products/<product_id>/ for existing product.
+        Kiểm tra GET /api/production/products/<product_id>/ cho sản phẩm đã tồn tại.
         """
         response = self.client.get(reverse('product-detail', args=[self.product_trek_820.product_id]))
         self.assertEqual(response.status_code, 200)
@@ -423,21 +416,19 @@ class ProductionAPITests(TestCase):
 
     def test_product_detail_get_not_found(self):
         """
-        Test GET /api/production/products/<product_id>/ for non-existent product.
-        Should return 404 Not Found.
+        Kiểm tra GET /api/production/products/<product_id>/ cho sản phẩm không tồn tại.
+        Expected trả về 404 Not Found.
         """
-        response = self.client.get(reverse('product-detail', args=[999999])) # Non-existent ID
+        response = self.client.get(reverse('product-detail', args=[999999])) # ID không tồn tại
         self.assertEqual(response.status_code, 404)
         self.assertIn('Sản phẩm không tồn tại', response.json()['error'])
 
     def test_product_update_patch_success(self):
         """
-        Test PATCH /api/production/products/<product_id>/ for successful update.
+        Kiểm tra PATCH /api/production/products/<product_id>/ cập nhật thành công.
         """
-        # Create a new product for this specific test to ensure it's not a fixture item
-        # that might be needed by other tests in its original state.
         temp_product = Product.objects.create(
-            product_id=999990, # A unique ID for this test
+            product_id=999990, # Một ID duy nhất cho testcase nàyày
             product_name='Temporary Product For Update',
             brand_id=self.brand_electra,
             category_id=self.category_children,
@@ -448,7 +439,7 @@ class ProductionAPITests(TestCase):
         update_data = {
             'product_name': 'Temporary Product - Updated Name',
             'list_price': '105.50',
-            'category_id': self.category_road.category_id # Change category
+            'category_id': self.category_road.category_id # Thay đổi Category
         }
         response = self.client.patch(
             reverse('product-detail', args=[temp_product.product_id]),
@@ -456,39 +447,38 @@ class ProductionAPITests(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
-        temp_product.refresh_from_db() # Reload the object from DB to get updated values
+        temp_product.refresh_from_db()
         self.assertEqual(temp_product.product_name, 'Temporary Product - Updated Name')
         self.assertEqual(temp_product.list_price, Decimal('105.50'))
         self.assertEqual(temp_product.category_id, self.category_road)
         self.assertEqual(response.json()['product_name'], 'Temporary Product - Updated Name')
 
-        temp_product.delete() # Clean up
+        temp_product.delete()
 
     def test_product_update_patch_no_changes(self):
         """
-        Test PATCH /api/production/products/<product_id>/ when no actual changes are made.
-        Should return 200 OK with current data.
+        Kiểm tra PATCH /api/production/products/<product_id>/ khi không có thay đổi thực tế nào được thực hiện.
+        Expected trả về 200 OK với dữ liệu hiện tại.
         """
-        # Using a fixture product for this.
+        # Sử dụng một sản phẩm từ fixture cho việc này.
         original_name = self.product_trek_820.product_name
         original_price = self.product_trek_820.list_price
 
         response = self.client.patch(
             reverse('product-detail', args=[self.product_trek_820.product_id]),
-            data=json.dumps({'product_name': original_name, 'list_price': str(original_price)}), # Same data
+            data=json.dumps({'product_name': original_name, 'list_price': str(original_price)}), # Dữ liệu giống nhau
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
-        self.assertIn('product_id', response.json()) # Should return current data
-        # Ensure it returns the expected current state
+        self.assertIn('product_id', response.json()) # Expected trả về dữ liệu hiện tại
         self.assertEqual(response.json()['product_name'], original_name)
         self.assertEqual(response.json()['list_price'], str(original_price))
 
 
     def test_product_update_patch_non_existent_product(self):
         """
-        Test PATCH /api/production/products/<product_id>/ for non-existent product.
-        Should return 404 Not Found.
+        Kiểm tra PATCH /api/production/products/<product_id>/ cho sản phẩm không tồn tại.
+        Expected trả về lỗi 404 Not Found.
         """
         response = self.client.patch(
             reverse('product-detail', args=[999999]),
@@ -500,22 +490,22 @@ class ProductionAPITests(TestCase):
 
     def test_product_update_patch_invalid_foreign_key(self):
         """
-        Test PATCH /api/production/products/<product_id>/ with non-existent foreign key ID.
-        Should return 404 Not Found for the related object.
+        Kiểm tra PATCH /api/production/products/<product_id>/ với ID khóa ngoại không tồn tại.
+        Expected trả về 404 Not Found cho đối tượng liên quan.
         """
-        # Test update with non-existent brand_id
+        # Kiểm tra cập nhật với brand_id không tồn tại
         response = self.client.patch(
             reverse('product-detail', args=[self.product_trek_820.product_id]),
-            data=json.dumps({'brand_id': 99999}), # Non-existent brand ID
+            data=json.dumps({'brand_id': 99999}), # ID Brand không tồn tại
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 404)
         self.assertIn('Brand với ID', response.json()['error'])
 
-        # Test update with non-existent category_id
+        # Kiểm tra cập nhật với category_id không tồn tại
         response = self.client.patch(
             reverse('product-detail', args=[self.product_trek_820.product_id]),
-            data=json.dumps({'category_id': 99999}), # Non-existent category ID
+            data=json.dumps({'category_id': 99999}), # ID Category không tồn tại
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 404)
@@ -524,11 +514,11 @@ class ProductionAPITests(TestCase):
 
     def test_product_delete_success(self):
         """
-        Test DELETE /api/production/products/<product_id>/ for successful deletion.
+        Kiểm tra DELETE /api/production/products/<product_id>/ xóa thành công.
         """
-        # Create a product specifically for this delete test
+        # Tạo một sản phẩm
         temp_product_to_delete = Product.objects.create(
-            product_id=999995, # Unique ID
+            product_id=999995,
             product_name='Temp Product For Delete',
             brand_id=self.brand_haro,
             category_id=self.category_children,
@@ -545,29 +535,28 @@ class ProductionAPITests(TestCase):
 
     def test_product_delete_not_found(self):
         """
-        Test DELETE /api/production/products/<product_id>/ for non-existent product.
-        Should return 404 Not Found.
+        Kiểm tra DELETE /api/production/products/<product_id>/ cho sản phẩm không tồn tại.
+        Expected trả về 404 Not Found.
         """
-        response = self.client.delete(reverse('product-detail', args=[999999])) # Non-existent ID
+        response = self.client.delete(reverse('product-detail', args=[999999])) # ID không tồn tại
         self.assertEqual(response.status_code, 404)
         self.assertIn('Sản phẩm không tồn tại', response.json()['error'])
 
-    # --- Tests for Stock API ---
+    # --- Các bài kiểm tra cho Stock API ---
     def test_stock_list_get(self):
         """
-        Test GET /api/production/stocks/ endpoint.
-        Should return a list of all stock entries.
+        Kiểm tra endpoint GET /api/production/stocks/.
+        Expected trả về danh sách tất cả các mục tồn kho.
         """
         response = self.client.get(reverse('stock-list-create'))
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIsInstance(data, list)
-        self.assertEqual(len(data), Stock.objects.count()) # Verify count matches total stocks in fixture
+        self.assertEqual(len(data), Stock.objects.count()) # Verify số lượng khớp với tổng số hàng tồn kho trong fixture
 
-        # Verify a specific stock entry's data (product_id=1, store_id=1)
+        # Verify dữ liệu của một mục tồn kho cụ thể (product_id=1, store_id=1)
         found_stock = next((item for item in data if item['product_id'] == self.product_trek_820.product_id and item['store_id'] == self.store_santa_cruz.store_id), None)
         self.assertIsNotNone(found_stock)
-        # Ensure the quantity matches what's in the fixture data for (store_id=1, product_id=1)
         # INSERT INTO stocks(store_id, product_id, quantity) VALUES(1,1,27);
         self.assertEqual(found_stock['quantity'], 27)
         self.assertEqual(found_stock['store_name'], 'Santa Cruz Bikes')
@@ -575,24 +564,23 @@ class ProductionAPITests(TestCase):
 
     def test_stock_create_post_success(self):
         """
-        Test POST /api/production/stocks/ for successful creation.
-        Uses a unique (store_id, product_id) combination guaranteed to be new.
+        Kiểm tra POST /api/production/stocks/ tạo mới thành công.
+        Sử dụng một cặp (store_id, product_id) mới.
         """
         initial_stock_count = Stock.objects.count()
 
-        # Create a product and store that are guaranteed not to conflict with fixtures
-        # (even if this specific product might not exist in the fixture)
-        # Ensure product_id 999999 is unique for the product creation
+        # Tạo một sản phẩm và cửa hàng chưa có fixture
+
         temp_product = Product.objects.create(
-            product_id=999999, # Highly unlikely to exist in fixture
+            product_id=999999, 
             product_name='Ephemeral Test Product',
-            brand_id=self.brand_electra, # Use an existing brand
-            category_id=self.category_children, # Use an existing category
+            brand_id=self.brand_electra, #Brand đã tồn tại
+            category_id=self.category_children, #Category đã tồn tại
             model_year=2025,
             list_price=Decimal('10.00')
         )
         temp_store = Store.objects.create(
-            store_id=999999, # Highly unlikely to exist in fixture
+            store_id=999999, 
             store_name='Ephemeral Test Store',
             city='TestCity', state='TC', zip_code='11111'
         )
@@ -607,7 +595,7 @@ class ProductionAPITests(TestCase):
             data=json.dumps(new_stock_data),
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, 201) # 201 Created
+        self.assertEqual(response.status_code, 201) # 201 Đã tạo
         self.assertEqual(Stock.objects.count(), initial_stock_count + 1)
         self.assertEqual(response.json()['quantity'], 75)
         self.assertTrue(Stock.objects.filter(
@@ -616,19 +604,18 @@ class ProductionAPITests(TestCase):
             quantity=75
         ).exists())
 
-        # Clean up temporary objects (good practice for per-test-method setup)
-        # These will also be cleaned up by the transaction on tearDown, but explicit is clear.
+        # Dọn dẹp các đối tượng tạm thời
         Stock.objects.get(store_id=temp_store, product_id=temp_product).delete()
         temp_product.delete()
         temp_store.delete()
 
     def test_stock_create_post_missing_field(self):
         """
-        Test POST /api/production/stocks/ with missing required fields (e.g., quantity).
+        Kiểm tra POST /api/production/stocks/ với các field bắt buộc bị thiếu (ví dụ: quantity).
         """
         response = self.client.post(
             reverse('stock-list-create'),
-            data=json.dumps({'store_id': self.store_santa_cruz.store_id, 'product_id': self.product_trek_820.product_id}), # Missing quantity
+            data=json.dumps({'store_id': self.store_santa_cruz.store_id, 'product_id': self.product_trek_820.product_id}), # Thiếu số lượng
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 400)
@@ -637,30 +624,30 @@ class ProductionAPITests(TestCase):
 
     def test_stock_create_post_duplicate_entry(self):
         """
-        Test POST /api/production/stocks/ with an already existing (store_id, product_id) pair.
-        Should return a 409 Conflict due to unique_together constraint.
+        Kiểm tra POST /api/production/stocks/ với cặp (store_id, product_id) đã tồn tại.
+        Expected trả về 409 Conflict do ràng buộc unique_together.
         """
-        # Using (store_id=1, product_id=1) which is (Santa Cruz, Trek 820) and exists in fixture
+        # Sử dụng (store_id=1, product_id=1) là (Santa Cruz, Trek 820) đã tồn tại trong fixture
         response = self.client.post(
             reverse('stock-list-create'),
             data=json.dumps({'store_id': self.store_santa_cruz.store_id,
                              'product_id': self.product_trek_820.product_id,
-                             'quantity': 10}), # Attempt to create duplicate of existing stock
+                             'quantity': 10}), # Cố tình tạo bản sao của kho hiện có
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, 409) # 409 Conflict
+        self.assertEqual(response.status_code, 409) # conflict
         self.assertIn('đã tồn tại', response.json()['error'])
         self.assertIn('Bản ghi tồn kho cho sản phẩm này tại cửa hàng này đã tồn tại', response.json()['error'])
 
     def test_stock_create_post_non_existent_foreign_key(self):
         """
-        Test POST /api/production/stocks/ with non-existent store_id or product_id.
-        Should return 404 Not Found.
+        Kiểm tra POST /api/production/stocks/ với store_id hoặc product_id không tồn tại.
+        Expected trả về 404 Not Found.
         """
-        # Test with non-existent store_id
+        # Kiểm tra với store_id không tồn tại
         response = self.client.post(
             reverse('stock-list-create'),
-            data=json.dumps({'store_id': 999999, # Non-existent store ID
+            data=json.dumps({'store_id': 999999, # ID cửa hàng không tồn tại
                              'product_id': self.product_trek_820.product_id,
                              'quantity': 10}),
             content_type='application/json'
@@ -668,11 +655,11 @@ class ProductionAPITests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertIn('Cửa hàng với ID', response.json()['error'])
 
-        # Test with non-existent product_id
+        # Kiểm tra với product_id không tồn tại
         response = self.client.post(
             reverse('stock-list-create'),
             data=json.dumps({'store_id': self.store_santa_cruz.store_id,
-                             'product_id': 999999, # Non-existent product ID
+                             'product_id': 999999, # ID sản phẩm không tồn tại
                              'quantity': 10}),
             content_type='application/json'
         )
@@ -681,7 +668,7 @@ class ProductionAPITests(TestCase):
 
     def test_stock_detail_get_success(self):
         """
-        Test GET /api/production/stocks/<store_id>/<product_id>/ for existing stock.
+        Kiểm tra GET /api/production/stocks/<store_id>/<product_id>/ cho kho đã tồn tại.
         """
         response = self.client.get(reverse('stock-detail', args=[self.stock_trek_820_santa_cruz.store_id.store_id, self.stock_trek_820_santa_cruz.product_id.product_id]))
         self.assertEqual(response.status_code, 200)
@@ -694,24 +681,24 @@ class ProductionAPITests(TestCase):
 
     def test_stock_detail_get_not_found(self):
         """
-        Test GET /api/production/stocks/<store_id>/<product_id>/ for non-existent stock.
-        Should return 404 Not Found.
+        Kiểm tra GET /api/production/stocks/<store_id>/<product_id>/ cho kho không tồn tại.
+        Expected trả về 404 Not Found.
         """
-        # Non-existent product at existing store
+        # Sản phẩm không tồn tại tại cửa hàng hiện có
         response = self.client.get(reverse('stock-detail', args=[self.store_santa_cruz.store_id, 999999]))
         self.assertEqual(response.status_code, 404)
         self.assertIn('Bản ghi tồn kho không tồn tại', response.json()['error'])
 
-        # Non-existent store for existing product
+        # Cửa hàng không tồn tại cho sản phẩm hiện có
         response = self.client.get(reverse('stock-detail', args=[999999, self.product_trek_820.product_id]))
         self.assertEqual(response.status_code, 404)
         self.assertIn('Bản ghi tồn kho không tồn tại', response.json()['error'])
 
     def test_stock_update_patch_success(self):
         """
-        Test PATCH /api/production/stocks/<store_id>/<product_id>/ for successful update.
+        Kiểm tra PATCH /api/production/stocks/<store_id>/<product_id>/ cập nhật thành công.
         """
-        # Create a new stock entry for this specific test to avoid altering fixture data
+        # Tạo một mục tồn kho mới
         temp_stock_product = Product.objects.create(
             product_id=999980, product_name='Update Test Product', brand_id=self.brand_electra, category_id=self.category_children, model_year=2020, list_price=Decimal('100.00')
         )
@@ -731,25 +718,25 @@ class ProductionAPITests(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
-        temp_stock.refresh_from_db() # Reload the object from DB
+        temp_stock.refresh_from_db()
         self.assertEqual(temp_stock.quantity, new_quantity)
         self.assertEqual(response.json()['quantity'], new_quantity)
 
-        temp_stock.delete() # Clean up
+        temp_stock.delete()
         temp_stock_product.delete()
         temp_stock_store.delete()
 
 
     def test_stock_update_patch_no_changes(self):
         """
-        Test PATCH /api/production/stocks/<store_id>/<product_id>/ when no actual changes are made.
-        Should return 200 OK with a specific message.
+        Kiểm tra PATCH /api/production/stocks/<store_id>/<product_id>/ khi không có thay đổi thực tế nào được thực hiện.
+        Expected trả về 200 OK với một thông báo cụ thể.
         """
-        # Using a fixture stock item for this
+        # Lấy một mục tồn kho từ fixture
         current_quantity = self.stock_trek_820_santa_cruz.quantity
         response = self.client.patch(
             reverse('stock-detail', args=[self.stock_trek_820_santa_cruz.store_id.store_id, self.stock_trek_820_santa_cruz.product_id.product_id]),
-            data=json.dumps({'quantity': current_quantity}), # Same quantity
+            data=json.dumps({'quantity': current_quantity}), # Dữ liệu giống nhau
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
@@ -757,11 +744,11 @@ class ProductionAPITests(TestCase):
 
     def test_stock_update_patch_non_existent_stock(self):
         """
-        Test PATCH /api/production/stocks/<store_id>/<product_id>/ for non-existent stock.
-        Should return 404 Not Found.
+        Kiểm tra PATCH /api/production/stocks/<store_id>/<product_id>/ cho kho không tồn tại.
+        Expected trả về 404 Not Found.
         """
         response = self.client.patch(
-            reverse('stock-detail', args=[999999, 999999]), # Non-existent combination
+            reverse('stock-detail', args=[999999, 999999]), # Cặp không tồn tại
             data=json.dumps({'quantity': 5}),
             content_type='application/json'
         )
@@ -770,21 +757,21 @@ class ProductionAPITests(TestCase):
 
     def test_stock_update_patch_missing_quantity_field(self):
         """
-        Test PATCH /api/production/stocks/<store_id>/<product_id>/ with missing quantity field.
+        Kiểm tra PATCH /api/production/stocks/<store_id>/<product_id>/ với trường quantity bị thiếu.
         """
         response = self.client.patch(
             reverse('stock-detail', args=[self.stock_trek_820_santa_cruz.store_id.store_id, self.stock_trek_820_santa_cruz.product_id.product_id]),
-            data=json.dumps({'some_other_field': 'value'}), # Missing quantity
+            data=json.dumps({'some_other_field': 'value'}), # Thiếu số lượng
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, 400) # Bad Request
+        self.assertEqual(response.status_code, 400)
         self.assertIn('Thiếu trường bắt buộc: quantity', response.json()['error'])
 
     def test_stock_delete_success(self):
         """
-        Test DELETE /api/production/stocks/<store_id>/<product_id>/ for successful deletion.
+        Kiểm tra DELETE /api/production/stocks/<store_id>/<product_id>/ xóa thành công.
         """
-        # Create a stock entry for this specific delete test
+        # Tạo một mục tồn kho
         temp_delete_product = Product.objects.create(
             product_id=999970, product_name='Delete Test Product', brand_id=self.brand_haro, category_id=self.category_road, model_year=2021, list_price=Decimal('500.00')
         )
@@ -805,24 +792,23 @@ class ProductionAPITests(TestCase):
             product_id=temp_stock_to_delete.product_id
         ).exists())
 
-        temp_delete_product.delete() # Clean up related product/store
+        temp_delete_product.delete()
         temp_delete_store.delete()
 
 
     def test_stock_delete_not_found(self):
         """
-        Test DELETE /api/production/stocks/<store_id>/<product_id>/ for non-existent stock.
-        Should return 404 Not Found.
+        Kiểm tra DELETE /api/production/stocks/<store_id>/<product_id>/ cho kho không tồn tại.
+        Expected trả về 404 Not Found.
         """
-        response = self.client.delete(reverse('stock-detail', args=[999999, 999999])) # Non-existent combination
+        response = self.client.delete(reverse('stock-detail', args=[999999, 999999])) # Cặp không tồn tại
         self.assertEqual(response.status_code, 404)
         self.assertIn('Bản ghi tồn kho không tồn tại', response.json()['error'])
         
 class ProductionAdminTests(TestCase):
     """
-    Tests for the customizations made in production/admin.py.
-    This involves creating a superuser, logging in, and inspecting
-    the HTML content of the admin changelist pages.
+    Test case cho production/admin.py.
+    TTạo một superuser, đăng nhập và kiểm tra nội dung HTML của các trang danh sách thay đổi trong admin.
     """
     fixtures = ['production_initial_data']
 
@@ -830,7 +816,6 @@ class ProductionAdminTests(TestCase):
     def setUpTestData(cls):
         """
         Tạo một superuser để sử dụng cho tất cả các test trong class này.
-        setUpTestData chạy một lần cho mỗi lớp test.
         """
         super().setUpTestData()
         cls.admin_user = User.objects.create_superuser(
@@ -842,12 +827,11 @@ class ProductionAdminTests(TestCase):
     def setUp(self):
         """
         Đăng nhập với superuser trước mỗi lần chạy test.
-        setUp chạy trước mỗi method test.
         """
         self.client = Client()
         self.client.login(username='admin_test', password='12345678')
 
-    # --- Tests cho BrandAdmin ---
+    # --- Test case cho BrandAdmin ---
     def test_brand_admin_list_view(self):
         """
         Kiểm tra trang danh sách Brand: list_display và ordering.
@@ -873,14 +857,13 @@ class ProductionAdminTests(TestCase):
         Kiểm tra ô tìm kiếm của BrandAdmin (search_fields).
         """
         url = reverse('admin:production_brand_changelist')
-        # Thêm `follow=True` để xử lý trường hợp tìm kiếm chỉ trả về 1 kết quả
         response = self.client.get(url, {'q': 'Haro'}, follow=True)
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Haro')
         self.assertNotContains(response, 'Trek')
 
-    # --- Tests cho CategoryAdmin ---
+    # --- Các bài kiểm tra cho CategoryAdmin ---
     def test_category_admin_list_view(self):
         """
         Kiểm tra trang danh sách Category: list_display và ordering.
@@ -911,24 +894,24 @@ class ProductionAdminTests(TestCase):
         self.assertContains(response, 'Mountain Bikes')
         self.assertNotContains(response, 'Road Bikes')
 
-    # --- Tests cho StockAdmin ---
-    # def test_stock_admin_list_view(self):
-    #     """
-    #     Kiểm tra trang danh sách Stock: list_display và các phương thức tùy chỉnh.
-    #     """
-    #     url = reverse('admin:production_stock_changelist')
-    #     response = self.client.get(url)
+    #--- Các bài kiểm tra cho StockAdmin ---
+    def test_stock_admin_list_view(self):
+        """
+        Kiểm tra trang danh sách Stock: list_display và các phương thức tùy chỉnh.
+        """
+        url = reverse('admin:production_stock_changelist')
+        response = self.client.get(url)
         
-    #     self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         
-    #     # Kiểm tra các header của cột được định nghĩa trong @admin.display
-    #     self.assertContains(response, 'Product Name')
-    #     self.assertContains(response, 'Store Name')
-    #     self.assertContains(response, 'Quantity')
+        # Kiểm tra các header của cột được định nghĩa trong @admin.display
+        self.assertContains(response, 'Product Name')
+        self.assertContains(response, 'Store Name')
+        self.assertContains(response, 'Quantity')
 
-    #     # Kiểm tra dữ liệu từ khóa ngoại được hiển thị
-    #     self.assertContains(response, 'Trek 820 - 2016') # Tên sản phẩm
-    #     self.assertContains(response, 'Santa Cruz Bikes') # Tên cửa hàng
+        # Kiểm tra dữ liệu từ khóa ngoại được hiển thị
+        self.assertContains(response, 'Electra Cruiser Lux 1 - 2017') # Tên sản phẩm
+        self.assertContains(response, 'Santa Cruz Bikes') # Tên cửa hàng
 
     def test_stock_admin_search(self):
         """
@@ -948,17 +931,17 @@ class ProductionAdminTests(TestCase):
         self.assertContains(response, 'Baldwin Bikes')
         self.assertNotContains(response, 'Santa Cruz Bikes')
 
-    # def test_stock_admin_filter_by_store(self):
-    #     """
-    #     Kiểm tra bộ lọc của StockAdmin (list_filter).
-    #     """
-    #     store_to_filter = Store.objects.get(store_name='Rowlett Bikes')
-    #     url = reverse('admin:production_stock_changelist')
+    def test_stock_admin_filter_by_store(self):
+        """
+        Kiểm tra bộ lọc của StockAdmin (list_filter).
+        """
+        store_to_filter = Store.objects.get(store_name='Rowlett Bikes')
+        url = reverse('admin:production_stock_changelist')
         
-    #     # Lọc theo store_id
-    #     response = self.client.get(url, {'store_id__id__exact': store_to_filter.pk})
-    #     self.assertEqual(response.status_code, 200)
+        # Lọc theo store_id
+        response = self.client.get(url, {'store_id__store_id__exact': store_to_filter.pk})
+        self.assertEqual(response.status_code, 200)
 
-    #     # Kết quả chỉ nên chứa cửa hàng 'Rowlett Bikes'
-    #     self.assertContains(response, 'Rowlett Bikes')
-    #     self.assertNotContains(response, 'Santa Cruz Bikes')
+        # Kết quả chỉ nên chứa cửa hàng 'Rowlett Bikes'
+        self.assertContains(response, 'Rowlett Bikes')
+        self.assertNotContains(response, 'Santa Cruz Bikes')

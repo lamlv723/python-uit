@@ -1,5 +1,3 @@
-# your_project/production/admin.py
-
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from .models import Category, Brand, Product, Stock
@@ -28,7 +26,7 @@ class PriceRangeFilter(admin.SimpleListFilter):
             return queryset.filter(list_price__gte=1000)
         return queryset
 
-# --- Các lớp Admin tùy chỉnh ---
+# --- Các lớp Admin ---
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('product_id', 'product_name', 'get_brand_name', 'get_category_name', 'model_year', 'list_price')
@@ -74,7 +72,7 @@ class StockAdmin(admin.ModelAdmin):
     def get_store_name(self, obj):
         return obj.store_id.store_name
 
-# --- Đăng ký Model với các lớp Admin tương ứng ---
+# --- Đăng ký Model ---
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Brand, BrandAdmin)
 admin.site.register(Category, CategoryAdmin)

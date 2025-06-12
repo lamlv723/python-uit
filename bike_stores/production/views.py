@@ -4,11 +4,11 @@ from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError, models
-import json
 from decimal import Decimal, InvalidOperation
-
 from .models import Category, Brand, Product, Stock
 from sales.models import Store
+
+import json
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ProductListView(View):
