@@ -68,7 +68,7 @@ class RevenueReportView(View):
         formatted_data = [
             {
                 'period': item['period'].strftime('%Y-%m-%d'),
-                'total_revenue': f"{item['total_revenue']:.3f}"
+                'total_revenue': f"{item['total_revenue']:,.2f}"
             }
             for item in sales_data
         ]
