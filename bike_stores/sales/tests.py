@@ -14,7 +14,7 @@ class SalesAPITestCase(TestCase):
         # Store, Customer, Staff
         self.store = Store.objects.create(
             store_id=1, store_name="Test Store", phone="123", email="store@test.com",
-            street="123 St", city="City", state="ST", zip_code="12345"
+            street="123 St", city="City", district="ST", zip_code="12345"
         )
         self.customer = Customer.objects.create(
             customer_id=1, first_name="John", last_name="Doe", email="john@example.com"
@@ -138,7 +138,7 @@ class SalesAPITestCase(TestCase):
             "email": "newstore@test.com",
             "street": "456 St",
             "city": "New City",
-            "state": "NC",
+            "district": "NC",
             "zip_code": "67890"
         }
         response = self.client.post(url, data=json.dumps(data), content_type="application/json")
@@ -167,7 +167,7 @@ class SalesAPITestCase(TestCase):
             email="delete@store.com",
             street="None",
             city="None",
-            state="NA",
+            district="NA",
             zip_code="00000"
         )
         url = reverse('store-detail', args=[store.store_id])
