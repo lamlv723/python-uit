@@ -26,7 +26,7 @@ class Product(models.Model):
     brand_id = models.ForeignKey(Brand, db_column='brand_id', on_delete=models.CASCADE)
     category_id = models.ForeignKey(Category, db_column='category_id', on_delete=models.CASCADE)
     model_year = models.SmallIntegerField()
-    list_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    list_price = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     
     def __str__(self):
         return self.product_name
