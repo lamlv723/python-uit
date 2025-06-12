@@ -80,7 +80,7 @@ class CustomerListView(View):
             phone=data.get('phone'),
             street=data.get('street'),
             city=data.get('city'),
-            state=data.get('state'),
+            district=data.get('district'),
             zip_code=data.get('zip_code')
         )
         response_data = Customer.objects.filter(customer_id=new_customer.customer_id).values().first()
@@ -100,7 +100,7 @@ class CustomerDetailView(View):
     def patch(self, request, customer_id):
         customer = get_instance_or_404(Customer, customer_id, 'Khách hàng không tồn tại')
         data = json.loads(request.body.decode('utf-8'))
-        updatable_fields = ['first_name', 'last_name', 'phone', 'email', 'street', 'city', 'state', 'zip_code']
+        updatable_fields = ['first_name', 'last_name', 'phone', 'email', 'street', 'city', 'district', 'zip_code']
         has_changes = update_instance_fields(customer, data, updatable_fields)
         if not has_changes and not data:
             current_data = Customer.objects.filter(customer_id=customer_id).values().first()
@@ -306,7 +306,7 @@ class StoreListView(View):
     @handle_exceptions
     def post(self, request):
         data = json.loads(request.body.decode('utf-8'))
-        required_fields = ['store_id', 'store_name', 'phone', 'email', 'street', 'city', 'state', 'zip_code']
+        required_fields = ['store_id', 'store_name', 'phone', 'email', 'street', 'city', 'district', 'zip_code']
         check_required_fields(data, required_fields)
         new_store = Store.objects.create(
             store_id=data.get('store_id'),
@@ -315,7 +315,7 @@ class StoreListView(View):
             email=data.get('email'),
             street=data.get('street'),
             city=data.get('city'),
-            state=data.get('state'),
+            district=data.get('district'),
             zip_code=data.get('zip_code')
         )
         response_data = Store.objects.filter(store_id=new_store.store_id).values().first()
@@ -335,7 +335,7 @@ class StoreDetailView(View):
     def patch(self, request, store_id):
         store = get_instance_or_404(Store, store_id, 'Cửa hàng không tồn tại')
         data = json.loads(request.body.decode('utf-8'))
-        updatable_fields = ['store_name', 'phone', 'email', 'street', 'city', 'state', 'zip_code']
+        updatable_fields = ['store_name', 'phone', 'email', 'street', 'city', 'district', 'zip_code']
         has_changes = update_instance_fields(store, data, updatable_fields)
         if not has_changes and not data:
             current_data = Store.objects.filter(store_id=store_id).values().first()

@@ -205,7 +205,7 @@ python3 manage.py migrate
 
 python3 manage.py createsuperuser
 
-sqlite3 db.sqlite3 < load_data_modified.sql
+sqlite3 db.sqlite3 < load_data_modified_vie.sql
 ```
 
 ```

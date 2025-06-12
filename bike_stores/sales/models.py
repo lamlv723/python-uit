@@ -8,8 +8,8 @@ class Customer(models.Model):
     phone = models.CharField(max_length=25, null=True, blank=True)
     street = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=50, null=True, blank=True)
-    state = models.CharField(max_length=25, null=True, blank=True)
-    zip_code = models.CharField(max_length=11, null=True, blank=True)
+    district = models.CharField(max_length=25, null=True, blank=True)
+    zip_code = models.CharField(max_length=6, null=True, blank=True)
 
     class Meta:
         db_table = 'customers'
@@ -21,8 +21,8 @@ class Store(models.Model):
     email = models.CharField(max_length=255, null=True, blank=True)
     street = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
-    state = models.CharField(max_length=10, null=True, blank=True)
-    zip_code = models.CharField(max_length=5, null=True, blank=True)
+    district = models.CharField(max_length=10, null=True, blank=True)
+    zip_code = models.CharField(max_length=6, null=True, blank=True)
 
     class Meta:
         db_table = 'stores'
@@ -64,7 +64,7 @@ class OrderItem(models.Model):
     item_id = models.PositiveIntegerField()
     product_id = models.ForeignKey('production.Product', db_column='product_id', on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    list_price = models.DecimalField(max_digits=10, decimal_places=2)
+    list_price = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0)
 
     class Meta:
