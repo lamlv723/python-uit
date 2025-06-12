@@ -1,20 +1,13 @@
-# your_project/production/admin.py
-
 from django.contrib import admin
-from django.contrib.admin import SimpleListFilter # Cần import này để tạo bộ lọc khoảng giá tùy chỉnh
-from django.db.models import F # Có thể hữu ích cho sắp xếp phức tạp hoặc tính toán
+from django.contrib.admin import SimpleListFilter
 from .models import Category, Brand, Product, Stock
 
-# 1. Định nghĩa bộ lọc tùy chỉnh cho khoảng giá (Tính năng số 3)
-class PriceRangeFilter(SimpleListFilter):
-    title = 'Khoảng giá' # Tiêu đề hiển thị trên thanh bên phải của Admin UI
-    parameter_name = 'price_range' # Tên parameter trong URL
+# --- Lớp PriceRangeFilter cho Product ---
+class PriceRangeFilter(admin.SimpleListFilter):
+    title = 'Khoảng giá'
+    parameter_name = 'price_range'
 
     def lookups(self, request, model_admin):
-        """
-        Trả về danh sách các tuples:
-        (giá trị sẽ xuất hiện trong URL, tên hiển thị trên UI)
-        """
         return [
             ('0-100', 'Dưới 100'),
             ('100-500', '100 - 500'),
@@ -23,53 +16,64 @@ class PriceRangeFilter(SimpleListFilter):
         ]
 
     def queryset(self, request, queryset):
-        """
-        Trả về queryset đã lọc dựa trên giá trị đã chọn.
-        """
         if self.value() == '0-100':
             return queryset.filter(list_price__lt=100)
         if self.value() == '100-500':
             return queryset.filter(list_price__gte=100, list_price__lt=500)
         if self.value() == '500-1000':
-            return queryset.filter(list_price__gte=500, list_price__lt=1000)
+            return queryset.filter(list_price__gte=500, list_price__lte=1000)
         if self.value() == '1000-max':
             return queryset.filter(list_price__gte=1000)
-        return queryset # Trả về queryset gốc nếu không có giá trị nào được chọn
+        return queryset
 
-# 2. Định nghĩa lớp ProductAdmin tùy chỉnh
+# --- Các lớp Admin ---
+
 class ProductAdmin(admin.ModelAdmin):
-    # a. Hiển thị các cột mong muốn trong danh sách
-    list_display = (
-        'product_id', 'product_name', 'brand_id', 'category_id', # Hiển thị các trường khóa ngoại
-        'model_year', 'list_price'
-    )
+    list_display = ('product_id', 'product_name', 'get_brand_name', 'get_category_name', 'model_year', 'list_price')
+    list_filter = ('brand_id', 'category_id', 'model_year', PriceRangeFilter)
+    search_fields = ('product_name',)
+    ordering = ('product_name',)
+    search_placeholder = "Search the product here"
 
-    # b. Thêm các bộ lọc vào thanh bên phải của Admin UI (Tính năng 1 & 2)
-    list_filter = (
-        'brand_id',    # Lọc theo Brand
-        'category_id', # Lọc theo Category
-        'model_year',  # Lọc theo Model Year (cũng hữu ích)
-        PriceRangeFilter, # Kích hoạt bộ lọc khoảng giá tùy chỉnh
-    )
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['search_placeholder'] = self.search_placeholder
+        return super().changelist_view(request, extra_context=extra_context)
 
-    # c. Thêm ô tìm kiếm (nếu chưa có)
-    search_fields = ('product_name',) # Cho phép tìm kiếm theo tên sản phẩm
+    @admin.display(description='Brand', ordering='brand_id__brand_name')
+    def get_brand_name(self, obj):
+        return obj.brand_id.brand_name
 
-    # d. Sắp xếp mặc định của danh sách (Tính năng 4)
-    # Bạn có thể sắp xếp theo một hoặc nhiều trường.
-    # Sử dụng '-' trước tên trường để sắp xếp giảm dần.
-    ordering = ('product_name',) # Mặc định sắp xếp tăng dần theo tên sản phẩm
-    # Hoặc: ordering = ('-list_price',) để sắp xếp giảm dần theo giá
-    # Hoặc: ordering = ('brand_id__brand_name', 'product_name') để sắp xếp theo tên brand, sau đó theo tên sản phẩm
+    @admin.display(description='Category', ordering='category_id__category_name')
+    def get_category_name(self, obj):
+        return obj.category_id.category_name
 
-    # Optional: Thêm các action tùy chỉnh nếu bạn muốn
-    # actions = [your_custom_action_function]
+class BrandAdmin(admin.ModelAdmin):
+    list_display = ('brand_id', 'brand_name')
+    search_fields = ('brand_name',)
+    ordering = ('brand_name',)
 
-# 3. Đăng ký các Model với lớp Admin tương ứng
-# Đăng ký Product với lớp ProductAdmin tùy chỉnh của bạn
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('category_id', 'category_name')
+    search_fields = ('category_name',)
+    ordering = ('category_name',)
+
+class StockAdmin(admin.ModelAdmin):
+    list_display = ('get_product_name', 'get_store_name', 'quantity')
+    search_fields = ('product_id__product_name', 'store_id__store_name')
+    list_filter = ('store_id', 'product_id__category_id', 'product_id__brand_id')
+    ordering = ('store_id', 'product_id__product_name')
+
+    @admin.display(description='Product Name', ordering='product_id__product_name')
+    def get_product_name(self, obj):
+        return obj.product_id.product_name
+
+    @admin.display(description='Store Name', ordering='store_id__store_name')
+    def get_store_name(self, obj):
+        return obj.store_id.store_name
+
+# --- Đăng ký Model ---
 admin.site.register(Product, ProductAdmin)
-
-# Đăng ký các Model còn lại như bình thường
-admin.site.register(Category)
-admin.site.register(Brand)
-admin.site.register(Stock)
+admin.site.register(Brand, BrandAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Stock, StockAdmin)
