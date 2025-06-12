@@ -582,7 +582,7 @@ class ProductionAPITests(TestCase):
         temp_store = Store.objects.create(
             store_id=999999, 
             store_name='Ephemeral Test Store',
-            city='TestCity', state='TC', zip_code='11111'
+            city='TestCity', district='TC', zip_code='11111'
         )
 
         new_stock_data = {
@@ -703,7 +703,7 @@ class ProductionAPITests(TestCase):
             product_id=999980, product_name='Update Test Product', brand_id=self.brand_electra, category_id=self.category_children, model_year=2020, list_price=Decimal('100.00')
         )
         temp_stock_store = Store.objects.create(
-            store_id=999980, store_name='Update Test Store', city='UCity', state='UT', zip_code='00000'
+            store_id=999980, store_name='Update Test Store', city='UCity', district='UT', zip_code='00000'
         )
         temp_stock = Stock.objects.create(store_id=temp_stock_store, product_id=temp_stock_product, quantity=50)
 
@@ -776,7 +776,7 @@ class ProductionAPITests(TestCase):
             product_id=999970, product_name='Delete Test Product', brand_id=self.brand_haro, category_id=self.category_road, model_year=2021, list_price=Decimal('500.00')
         )
         temp_delete_store = Store.objects.create(
-            store_id=999970, store_name='Delete Test Store', city='DCity', state='DT', zip_code='22222'
+            store_id=999970, store_name='Delete Test Store', city='DCity', district='DT', zip_code='22222'
         )
         temp_stock_to_delete = Stock.objects.create(store_id=temp_delete_store, product_id=temp_delete_product, quantity=30)
         initial_stock_count = Stock.objects.count()
