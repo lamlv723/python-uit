@@ -8,7 +8,7 @@ class Customer(models.Model):
     phone = models.CharField(max_length=25, null=True, blank=True)
     street = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=50, null=True, blank=True)
-    state = models.CharField(max_length=25, null=True, blank=True)
+    district = models.CharField(max_length=25, null=True, blank=True)
     zip_code = models.CharField(max_length=11, null=True, blank=True)
 
     class Meta:
@@ -21,7 +21,7 @@ class Store(models.Model):
     email = models.CharField(max_length=255, null=True, blank=True)
     street = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
-    state = models.CharField(max_length=10, null=True, blank=True)
+    district = models.CharField(max_length=10, null=True, blank=True)
     zip_code = models.CharField(max_length=5, null=True, blank=True)
 
     class Meta:

@@ -1692,22 +1692,38 @@ INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, 
 INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1433, 'Phong', 'Lý Ngọc', '0354280894', 'phongnl@gmail.com', '88 Hoàng Sa', 'Hà Nội', 'Thanh Xuân', '344781');
 INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1434, 'Hạnh', 'Võ Thị', '0564688396', 'hanhtv@gmail.com', '664 Lê Lợi', 'Đà Nẵng', 'Hải Châu', '651505');
 INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1435, 'Phương', 'Vương Bảo', '0961230311', 'phuongbv@gmail.com', '634 Bùi Viện', 'Hà Nội', 'Hai Bà Trưng', '698081');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1436, 'Linh', 'Trần Thùy', '0987654321', 'linhtt@gmail.com', '123 Lê Thánh Tôn', 'TP. Hồ Chí Minh', 'Quận 1', '701000');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1437, 'Minh', 'Lê Đức', '0912345678', 'minhld@yahoo.com', '45 Lý Thường Kiệt', 'Hà Nội', 'Hoàn Kiếm', '110000');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1438, 'Hà', 'Phạm Thanh', '0334567890', 'hapham@msn.com', '212 Nguyễn Văn Linh', 'Đà Nẵng', 'Thanh Khê', '550000');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1439, 'Sơn', 'Nguyễn Tùng', '0865432109', 'sonnt@gmail.com', '88 Võ Văn Tần', 'TP. Hồ Chí Minh', 'Quận 3', '703000');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1440, 'Trang', 'Hoàng Huyền', '0905112233', 'tranghh@yahoo.com', '30 Bà Triệu', 'Hà Nội', 'Hai Bà Trưng', '112000');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1441, 'Dũng', 'Vũ Mạnh', '0778899001', 'dungvm@gmail.com', '99 Hùng Vương', 'Đà Nẵng', 'Hải Châu', '551000');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1442, 'Thảo', 'Đỗ Phương', '0832109876', 'thaodp@msn.com', '101 Pasteur', 'TP. Hồ Chí Minh', 'Quận 1', '701050');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1443, 'Tú', 'Võ Anh', '0945678901', 'tuanhvo@yahoo.com', '55 Xã Đàn', 'Hà Nội', 'Đống Đa', '115000');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1444, 'Bình', 'Trần An', '0398765432', 'binhta@gmail.com', '789 Điện Biên Phủ', 'TP. Hồ Chí Minh', 'Bình Thạnh', '717000');
+INSERT INTO customers(customer_id, first_name, last_name, phone, email, street, city, district, zip_code) VALUES(1445, 'Nga', 'Lê Thị', '0812345678', 'ngalt@yahoo.com', '333 Trưng Nữ Vương', 'Đà Nẵng', 'Hải Châu', '551200');
 
+
+-- Stores --
 INSERT INTO stores(store_id, store_name, phone, email, street, city, district, zip_code) VALUES(1, 'Santa Cruz Bikes', '0843546570', 'santacruz@bikes.shop', '51 Lê Duẩn', 'Hà Nội', 'Hoàng Mai', '958285');
 INSERT INTO stores(store_id, store_name, phone, email, street, city, district, zip_code) VALUES(2, 'Baldwin Bikes', '0582211096', 'baldwin@bikes.shop', '476 Điện Biên Phủ', 'Đà Nẵng', 'Hải Châu', '891148');
 INSERT INTO stores(store_id, store_name, phone, email, street, city, district, zip_code) VALUES(3, 'Rowlett Bikes', '0578591456', 'rowlett@bikes.shop', '426 Lê Lợi', 'TP. Hồ Chí Minh', 'Bình Thạnh', '998905');
 
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(1, 'Fabiola', 'Jackson', 'fabiola.jackson@bikes.shop', '0787313074', 1, 1, NULL);
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(2, 'Mireya', 'Copeland', 'mireya.copeland@bikes.shop', '0767581443', 1, 1, '1');
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(3, 'Genna', 'Serrano', 'genna.serrano@bikes.shop', '0987876577', 1, 1, '2');
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(4, 'Virgie', 'Wiggins', 'virgie.wiggins@bikes.shop', '0564656001', 1, 1, '2');
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(5, 'Jannette', 'David', 'jannette.david@bikes.shop', '0595217813', 1, 2, '1');
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(6, 'Marcelene', 'Boyer', 'marcelene.boyer@bikes.shop', '0594677092', 1, 2, '5');
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(7, 'Venita', 'Daniel', 'venita.daniel@bikes.shop', '0890902256', 1, 2, '5');
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(8, 'Kali', 'Vargas', 'kali.vargas@bikes.shop', '0935743565', 1, 3, '1');
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(9, 'Layla', 'Terrell', 'layla.terrell@bikes.shop', '0877672980', 1, 3, '7');
-INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(10, 'Bernardine', 'Houston', 'bernardine.houston@bikes.shop', '0522558546', 1, 3, '7');
 
+-- Staffs --
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(1, 'Phương', 'Vũ', 'phuong.vu@bikes.shop', '0787313074', 1, 1, NULL);
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(2, 'Thảo', 'Nguyễn', 'thao.nguyen@bikes.shop', '0767581443', 1, 1, 1);
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(3, 'Hạnh', 'Trần', 'hanh.tran@bikes.shop', '0987876577', 1, 1, 2);
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(4, 'Mai', 'Lê', 'mai.le@bikes.shop', '0564656001', 1, 1, 2);
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(5, 'Tuyết', 'Phạm', 'tuyet.pham@bikes.shop', '0595217813', 1, 2, 1);
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(6, 'Linh', 'Đặng', 'linh.dang@bikes.shop', '0594677092', 1, 2, 5);
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(7, 'Như', 'Bùi', 'nhu.bui@bikes.shop', '0890902256', 1, 2, 5);
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(8, 'Oanh', 'Vương', 'oanh.vuong@bikes.shop', '0935743565', 1, 3, 1);
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(9, 'Giang', 'Hồ', 'giang.ho@bikes.shop', '0877672980', 1, 3, 7);
+INSERT INTO staffs(staff_id, first_name, last_name, email, phone, active, store_id, manager_id) VALUES(10, 'Hồng', 'Đào', 'hong.dao@bikes.shop', '0522558546', 1, 3, 7);
+
+
+-- Orders --
 INSERT INTO orders(order_id, customer_id, order_status, order_date, required_date, shipped_date, store_id, staff_id) VALUES(1, 259, 4, '20160101', '20160103', '20160103', 1, 2);
 INSERT INTO orders(order_id, customer_id, order_status, order_date, required_date, shipped_date, store_id, staff_id) VALUES(2, 1212, 4, '20160101', '20160104', '20160103', 2, 6);
 INSERT INTO orders(order_id, customer_id, order_status, order_date, required_date, shipped_date, store_id, staff_id) VALUES(3, 523, 4, '20160102', '20160105', '20160103', 2, 7);
@@ -3324,6 +3340,8 @@ INSERT INTO orders(order_id, customer_id, order_status, order_date, required_dat
 INSERT INTO orders(order_id, customer_id, order_status, order_date, required_date, shipped_date, store_id, staff_id) VALUES(1614, 135, 3, '20181128', '20181128', NULL, 3, 8);
 INSERT INTO orders(order_id, customer_id, order_status, order_date, required_date, shipped_date, store_id, staff_id) VALUES(1615, 136, 3, '20181228', '20181228', NULL, 3, 8);
 
+
+-- Order Items --
 INSERT INTO order_items(order_id, item_id, product_id, quantity, list_price, discount) VALUES(1, 1, 20, 1, 24000.000, 599.99);
 INSERT INTO order_items(order_id, item_id, product_id, quantity, list_price, discount) VALUES(1, 2, 8, 2, 48000.000, 1799.99);
 INSERT INTO order_items(order_id, item_id, product_id, quantity, list_price, discount) VALUES(1, 3, 10, 2, 48000.000, 1549.0);
@@ -8047,6 +8065,8 @@ INSERT INTO order_items(order_id, item_id, product_id, quantity, list_price, dis
 INSERT INTO order_items(order_id, item_id, product_id, quantity, list_price, discount) VALUES(1615, 2, 214, 1, 24000.000, 899.99);
 INSERT INTO order_items(order_id, item_id, product_id, quantity, list_price, discount) VALUES(1615, 3, 182, 1, 24000.000, 2499.99);
 
+
+-- Stocks --
 INSERT INTO stocks(store_id, product_id, quantity) VALUES(1, 1, 27);
 INSERT INTO stocks(store_id, product_id, quantity) VALUES(1, 2, 5);
 INSERT INTO stocks(store_id, product_id, quantity) VALUES(1, 3, 6);
