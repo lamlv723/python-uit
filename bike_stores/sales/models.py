@@ -64,7 +64,7 @@ class OrderItem(models.Model):
     item_id = models.PositiveIntegerField()
     product_id = models.ForeignKey('production.Product', db_column='product_id', on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    list_price = models.DecimalField(max_digits=10, decimal_places=2)
+    list_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0)
 
     class Meta:
