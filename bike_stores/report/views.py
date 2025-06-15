@@ -34,56 +34,54 @@ class InventoryReportView(View):
 # Revenue report
 class RevenueReportView(View):
     """
-    API trả về báo cáo doanh thu theo thời gian.
-    Có thể lọc theo start_date, end_date và nhóm theo period.
+    Báo cáo doanh thu theo thời gian.
     """
 
     def get(self, request, *args, **kwargs):
-        # Lấy tham số từ URL, nếu không có thì đặt giá trị mặc định/None
         start_date_str = request.GET.get('start_date')
         end_date_str = request.GET.get('end_date', date.today().isoformat())
         period = request.GET.get('period', 'month')
+        store_id_str = request.GET.get('store_id')
 
-        # Validate tham số period
         if period not in ['day', 'week', 'month', 'quarter', 'year']:
             return JsonResponse(
                 {'error': "Tham số 'period' phải là 'day', 'week', 'month', 'quarter', hoặc 'year'."},
                 status=400
             )
 
-        # Chuyển đổi string thành object date
         try:
             end_date = date.fromisoformat(end_date_str)
             start_date = date.fromisoformat(start_date_str) if start_date_str else None
-        except ValueError:
-            return JsonResponse(
-                {'error': "Định dạng ngày không hợp lệ. Vui lòng dùng YYYY-MM-DD."},
-                status=400
-            )
+            store_id = int(store_id_str) if store_id_str else None
+        except (ValueError, TypeError):
+            return JsonResponse({'error': "Định dạng tham số không hợp lệ (ngày tháng, store_id)."}, status=400)
 
-        # Gọi hàm service để lấy dữ liệu
-        sales_data = get_revenue_report_data(start_date=start_date, end_date=end_date, period=period)
+        revenue_result = get_revenue_report_data(
+            start_date=start_date,
+            end_date=end_date,
+            period=period,
+            store_id=store_id
+        )
 
-        # Format lại dữ liệu để đảm bảo an toàn khi parse JSON phía client
-        formatted_data = [
-            {
-                'period': item['period'].strftime('%Y-%m-%d'),
-                'total_revenue': f"{item['total_revenue']:,.2f}"
-            }
-            for item in sales_data
-        ]
+        # sales_data = revenue_result.get('data', [])
+        # store_name = revenue_result.get('store_name', 'Lỗi không xác định')
+
+        # Format response
+        if revenue_result.get('data'):
+            for item in revenue_result.get('data'):
+                item['period'] = item['period'].strftime("%Y-%m-%d")
+                item['total_revenue'] = f"{item['total_revenue']:,.2f}"
 
         response_data = {
-            'report_title': 'Báo cáo doanh thu bán hàng',
+            'report_title': 'Báo cáo Doanh thu theo Thời gian',
+            # 'store_name': store_name,
             'currency': 'VND',
             'query_params': {
-                'start_date': start_date_str,
-                'end_date': end_date_str,
-                'period': period,
+                'start_date': start_date_str, 'end_date': end_date_str,
+                'period': period, 'store_id': store_id
             },
-            'data': formatted_data
+            'revenue': revenue_result
         }
-
         return JsonResponse(response_data)
 
 
